@@ -1,0 +1,11 @@
+<form hx-post="/intents/{{ intent_id }}/plans" hx-target="#plan-list" hx-swap="innerHTML"
+      hx-on::after-request="this.closest('#plan-form-container').innerHTML = '<button hx-get=\'/intents/{{ intent_id }}/plans/new\' hx-target=\'#plan-form-container\' hx-swap=\'innerHTML\'>+ New Plan</button>'; htmx.process(document.getElementById('plan-form-container'))">
+    <fieldset role="group">
+        <input type="text" name="title" placeholder="Plan title" required autofocus>
+        <input type="text" name="description" placeholder="Description (optional)">
+        <button type="submit">Create</button>
+    </fieldset>
+    <small>
+        <a href="#" onclick="this.closest('#plan-form-container').innerHTML = '<button hx-get=\'/intents/{{ intent_id }}/plans/new\' hx-target=\'#plan-form-container\' hx-swap=\'innerHTML\'>+ New Plan</button>'; htmx.process(document.getElementById('plan-form-container')); return false;">Cancel</a>
+    </small>
+</form>

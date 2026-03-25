@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ intent.title }} - Intent Planner{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ul>
+        <li><a href="/">Intents</a></li>
+        <li>{{ intent.title }}</li>
+    </ul>
+</nav>
+
+<article>
+    <header>
+        <div class="intent-header">
+            <hgroup>
+                <h2>{{ intent.title }}</h2>
+                {% if intent.description %}
+                <p>{{ intent.description }}</p>
+                {% endif %}
+            </hgroup>
+            <div class="intent-meta">
+                <span class="status-badge status-{{ intent.status.value }}">{{ intent.status.value }}</span>
+                <small>Created {{ intent.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+        </div>
+        {% if progress.total > 0 %}
+        <div class="progress-section">
+            <progress value="{{ progress.percent }}" max="100"></progress>
+            <small>{{ progress.completed }}/{{ progress.total }} tasks completed ({{ progress.percent }}%)</small>
+        </div>
+        {% endif %}
+    </header>
+
+    <h3>Plans</h3>
+
+    <div id="plan-form-container">
+        <button hx-get="/intents/{{ intent.id }}/plans/new" hx-target="#plan-form-container" hx-swap="innerHTML">
+            + New Plan
+        </button>
+    </div>
+
+    <div id="plan-list">
+        {% include "partials/plan_list.html" %}
+    </div>
+</article>
+
+<div style="margin-top: 1rem;">
+    <details>
+        <summary role="button" class="outline secondary">Intent Actions</summary>
+        <div class="intent-actions">
+            <button class="outline" hx-put="/intents/{{ intent.id }}"
+                    hx-vals='{"status": "active"}' hx-target="body"
+                    {% if intent.status.value == 'active' %}disabled{% endif %}>
+                Mark Active
+            </button>
+            <button class="outline" hx-put="/intents/{{ intent.id }}"
+                    hx-vals='{"status": "archived"}' hx-target="body">
+                Archive
+            </button>
+            <button class="outline secondary" hx-delete="/intents/{{ intent.id }}"
+                    hx-confirm="Delete this intent and all its plans/tasks?"
+                    hx-target="body" hx-push-url="/">
+                Delete Intent
+            </button>
+        </div>
+    </details>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+<div id="progress-bar-{{ plan_id }}" hx-swap-oob="true">
+    {% if progress.total > 0 %}
+    <progress value="{{ progress.percent }}" max="100"></progress>
+    <small>
+        {{ progress.completed }}/{{ progress.total }} completed
+        {% if progress.in_progress > 0 %} &middot; {{ progress.in_progress }} in progress{% endif %}
+        {% if progress.failed > 0 %} &middot; {{ progress.failed }} failed{% endif %}
+        &middot; {{ progress.percent }}%
+    </small>
+    {% else %}
+    <small>No tasks yet</small>
+    {% endif %}
+</div>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Intent Planner{% endblock %}
+{% block content %}
+<hgroup>
+    <h1>Intents</h1>
+    <p>Manage your AI agent intents, goals, and task decomposition</p>
+</hgroup>
+
+<div id="intent-form-container">
+    <button hx-get="/intents/new" hx-target="#intent-form-container" hx-swap="innerHTML">
+        + New Intent
+    </button>
+</div>
+
+<div id="intent-list">
+    {% include "partials/intent_list.html" %}
+</div>
+{% endblock %}

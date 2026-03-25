@@ -1,0 +1,186 @@
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.status-draft { background: #e2e8f0; color: #475569; }
+.status-active { background: #dbeafe; color: #1d4ed8; }
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-archived { background: #f3e8ff; color: #7c3aed; }
+.status-pending { background: #f1f5f9; color: #64748b; }
+.status-in_progress { background: #fef3c7; color: #b45309; }
+.status-failed { background: #fee2e2; color: #dc2626; }
+
+/* Intent header layout */
+.intent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.intent-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+/* Progress section */
+.progress-section {
+    margin-top: 0.5rem;
+}
+
+.progress-section progress {
+    margin-bottom: 0.25rem;
+}
+
+/* Grid list for intent cards */
+.grid-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.intent-card, .plan-card {
+    margin-bottom: 0;
+}
+
+.intent-card header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Task row */
+.task-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.task-row.task-status-completed {
+    opacity: 0.7;
+}
+
+.task-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.task-actions .status-form {
+    margin: 0;
+}
+
+.task-actions select {
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    min-width: 120px;
+}
+
+/* Small buttons */
+.small-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+/* Dependency tags */
+.task-deps {
+    margin-top: 0.25rem;
+}
+
+.dep-tag {
+    display: inline-block;
+    background: #e2e8f0;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
+}
+
+.dep-remove {
+    color: #dc2626;
+    text-decoration: none;
+    margin-left: 0.2rem;
+    font-weight: bold;
+}
+
+.dep-dropdown {
+    margin: 0;
+}
+
+.dep-dropdown summary {
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+}
+
+.dep-dropdown form {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    min-width: 200px;
+}
+
+.dep-dropdown select {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+/* Plan list */
+.plan-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.plan-card {
+    padding: 0.75rem 1rem;
+}
+
+/* Task list */
+.task-list {
+    display: grid;
+    gap: 0.25rem;
+}
+
+/* Intent actions */
+.intent-actions, .plan-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+}
+
+/* Error toast */
+.error-toast {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}

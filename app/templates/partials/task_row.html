@@ -1,0 +1,62 @@
+<article class="task-row task-status-{{ task.status.value }}" id="task-row-{{ task.id }}">
+    <div class="task-info">
+        <div class="task-title">
+            <strong>{{ task.title }}</strong>
+            <span class="status-badge status-{{ task.status.value }}">{{ task.status.value | replace('_', ' ') }}</span>
+        </div>
+        {% if task.description %}
+        <small>{{ task.description }}</small>
+        {% endif %}
+        {% if task.dependencies %}
+        <div class="task-deps">
+            <small>Depends on:
+                {% for dep in task.dependencies %}
+                <span class="dep-tag">{{ dep.title }}
+                    <a href="#" hx-delete="/tasks/{{ task.id }}/dependencies/{{ dep.id }}"
+                       hx-target="#task-list" hx-swap="innerHTML"
+                       hx-confirm="Remove dependency?"
+                       class="dep-remove">&times;</a>
+                </span>
+                {% endfor %}
+            </small>
+        </div>
+        {% endif %}
+    </div>
+    <div class="task-actions">
+        <form class="status-form">
+            <select name="status"
+                    hx-patch="/tasks/{{ task.id }}/status"
+                    hx-target="#task-row-{{ task.id }}"
+                    hx-swap="outerHTML"
+                    hx-include="this">
+                <option value="pending" {% if task.status.value == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="in_progress" {% if task.status.value == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="completed" {% if task.status.value == 'completed' %}selected{% endif %}>Completed</option>
+                <option value="failed" {% if task.status.value == 'failed' %}selected{% endif %}>Failed</option>
+            </select>
+        </form>
+        {% if plan.tasks | length > 1 %}
+        <details class="dep-dropdown">
+            <summary class="outline secondary small-btn">+ Dep</summary>
+            <form hx-post="/tasks/{{ task.id }}/dependencies" hx-target="#task-list" hx-swap="innerHTML">
+                <select name="depends_on_id" required>
+                    <option value="">Select task...</option>
+                    {% for other in plan.tasks %}
+                    {% if other.id != task.id and other not in task.dependencies %}
+                    <option value="{{ other.id }}">{{ other.title }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit" class="small-btn">Add</button>
+            </form>
+        </details>
+        {% endif %}
+        <button class="outline secondary small-btn"
+                hx-delete="/tasks/{{ task.id }}"
+                hx-confirm="Delete this task?"
+                hx-target="#task-{{ task.id }}"
+                hx-swap="outerHTML">
+            &times;
+        </button>
+    </div>
+</article>

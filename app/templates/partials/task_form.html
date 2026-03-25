@@ -1,0 +1,11 @@
+<form hx-post="/plans/{{ plan_id }}/tasks" hx-target="#task-list" hx-swap="innerHTML"
+      hx-on::after-request="this.closest('#task-form-container').innerHTML = '<button hx-get=\'/plans/{{ plan_id }}/tasks/new\' hx-target=\'#task-form-container\' hx-swap=\'innerHTML\'>+ New Task</button>'; htmx.process(document.getElementById('task-form-container'))">
+    <fieldset role="group">
+        <input type="text" name="title" placeholder="Task title" required autofocus>
+        <input type="text" name="description" placeholder="Description (optional)">
+        <button type="submit">Add</button>
+    </fieldset>
+    <small>
+        <a href="#" onclick="this.closest('#task-form-container').innerHTML = '<button hx-get=\'/plans/{{ plan_id }}/tasks/new\' hx-target=\'#task-form-container\' hx-swap=\'innerHTML\'>+ New Task</button>'; htmx.process(document.getElementById('task-form-container')); return false;">Cancel</a>
+    </small>
+</form>

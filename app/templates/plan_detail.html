@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ plan.title }} - Intent Planner{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ul>
+        <li><a href="/">Intents</a></li>
+        <li><a href="/intents/{{ plan.intent_id }}">{{ plan.intent.title }}</a></li>
+        <li>{{ plan.title }}</li>
+    </ul>
+</nav>
+
+<article>
+    <header>
+        <hgroup>
+            <h2>{{ plan.title }}</h2>
+            {% if plan.description %}
+            <p>{{ plan.description }}</p>
+            {% endif %}
+        </hgroup>
+        <div id="progress-bar-{{ plan.id }}">
+            {% include "partials/progress_bar.html" %}
+        </div>
+    </header>
+
+    <h3>Tasks</h3>
+
+    <div id="task-form-container">
+        <button hx-get="/plans/{{ plan.id }}/tasks/new" hx-target="#task-form-container" hx-swap="innerHTML">
+            + New Task
+        </button>
+    </div>
+
+    <div id="task-list">
+        {% include "partials/task_list.html" %}
+    </div>
+</article>
+
+<div style="margin-top: 1rem;">
+    <details>
+        <summary role="button" class="outline secondary">Plan Actions</summary>
+        <div class="plan-actions">
+            <button class="outline secondary" hx-delete="/plans/{{ plan.id }}"
+                    hx-confirm="Delete this plan and all its tasks?"
+                    hx-target="body" hx-push-url="/intents/{{ plan.intent_id }}">
+                Delete Plan
+            </button>
+        </div>
+    </details>
+</div>
+{% endblock %}

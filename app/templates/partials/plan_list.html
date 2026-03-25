@@ -1,0 +1,17 @@
+{% if intent.plans %}
+<div class="plan-list">
+    {% for plan in intent.plans %}
+    <article class="plan-card">
+        <a href="/plans/{{ plan.id }}">
+            <strong>{{ plan.title }}</strong>
+        </a>
+        {% if plan.description %}
+        <p><small>{{ plan.description }}</small></p>
+        {% endif %}
+        <small>{{ plan.tasks | length }} task(s)</small>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p>No plans yet. Add a plan to break down this intent.</p>
+{% endif %}

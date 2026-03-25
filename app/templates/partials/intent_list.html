@@ -1,0 +1,28 @@
+{% if intents %}
+<div class="grid-list">
+    {% for intent in intents %}
+    <article class="intent-card">
+        <header>
+            <a href="/intents/{{ intent.id }}"><strong>{{ intent.title }}</strong></a>
+            <span class="status-badge status-{{ intent.status.value }}">{{ intent.status.value }}</span>
+        </header>
+        {% if intent.description %}
+        <p>{{ intent.description }}</p>
+        {% endif %}
+        {% set p = progress_map[intent.id] %}
+        {% if p.total > 0 %}
+        <footer>
+            <progress value="{{ p.percent }}" max="100"></progress>
+            <small>{{ p.completed }}/{{ p.total }} tasks ({{ p.percent }}%)</small>
+        </footer>
+        {% else %}
+        <footer>
+            <small>No tasks yet &middot; {{ intent.plans | length }} plan(s)</small>
+        </footer>
+        {% endif %}
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p>No intents yet. Create your first intent to get started.</p>
+{% endif %}

@@ -1,0 +1,11 @@
+{% if plan.tasks %}
+<div class="task-list" role="list">
+    {% for task in plan.tasks %}
+    <div id="task-{{ task.id }}">
+        {% include "partials/task_row.html" with context %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No tasks yet. Add tasks to build out this plan.</p>
+{% endif %}
