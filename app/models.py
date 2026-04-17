@@ -98,3 +98,43 @@ class Task(Base):
         secondaryjoin=id == task_dependencies.c.depends_on_id,
         backref="dependents",
     )
+
+
+class RegionType(str, enum.Enum):
+    CONTINENT = "continent"
+    COUNTRY = "country"
+    STATE = "state"
+    CITY = "city"
+    DISTRICT = "district"
+    OTHER = "other"
+
+
+class GeoRegion(Base):
+    __tablename__ = "geo_regions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(255))
+    code: Mapped[str | None] = mapped_column(String(32), default=None, unique=True)
+    region_type: Mapped[RegionType] = mapped_column(
+        Enum(RegionType), default=RegionType.OTHER
+    )
+    parent_id: Mapped[int | None] = mapped_column(
+        ForeignKey("geo_regions.id", ondelete="CASCADE"), default=None
+    )
+    latitude: Mapped[float | None] = mapped_column(default=None)
+    longitude: Mapped[float | None] = mapped_column(default=None)
+    boundary_json: Mapped[str | None] = mapped_column(Text, default=None)
+    description: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    parent: Mapped["GeoRegion | None"] = relationship(
+        back_populates="children", remote_side="GeoRegion.id"
+    )
+    children: Mapped[list["GeoRegion"]] = relationship(
+        back_populates="parent", cascade="all, delete-orphan"
+    )
