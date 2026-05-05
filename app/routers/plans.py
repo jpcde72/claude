@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/intents/{intent_id}/plans/new", response_class=HTMLResponse)
 def new_plan_form(request: Request, intent_id: int):
     return templates.TemplateResponse(
-        "partials/plan_form.html", {"request": request, "intent_id": intent_id}
+        request, "partials/plan_form.html", {"intent_id": intent_id}
     )
 
 
@@ -42,8 +42,7 @@ def create_plan(
     db.refresh(intent)
     progress = calculate_intent_progress(db, intent_id)
     return templates.TemplateResponse(
-        "partials/plan_list.html",
-        {"request": request, "intent": intent, "progress": progress},
+        request, "partials/plan_list.html", {"intent": intent, "progress": progress}
     )
 
 
@@ -54,8 +53,7 @@ def plan_detail(request: Request, plan_id: int, db: Session = Depends(get_db)):
         return HTMLResponse("<p>Plan not found</p>", status_code=404)
     progress = calculate_plan_progress(db, plan_id)
     return templates.TemplateResponse(
-        "plan_detail.html",
-        {"request": request, "plan": plan, "progress": progress},
+        request, "plan_detail.html", {"plan": plan, "progress": progress}
     )
 
 
@@ -78,8 +76,7 @@ def update_plan(
     db.refresh(plan)
     progress = calculate_plan_progress(db, plan_id)
     return templates.TemplateResponse(
-        "plan_detail.html",
-        {"request": request, "plan": plan, "progress": progress},
+        request, "plan_detail.html", {"plan": plan, "progress": progress}
     )
 
 
