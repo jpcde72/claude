@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - db_data:/app/data
+    env_file:
+      - .env
+    environment:
+      - INTENT_PLANNER_DATABASE_URL=sqlite:////app/data/intent_planner.db
+
+volumes:
+  db_data:
