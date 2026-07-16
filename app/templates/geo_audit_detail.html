@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ audit.brand }} — GEO Audit{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ul>
+        <li><a href="/geo">GEO Audits</a></li>
+        <li>{{ audit.brand }}</li>
+    </ul>
+</nav>
+
+<hgroup>
+    <h1>{{ audit.brand }}
+        <span class="status-badge status-{{ audit.status.value }}">{{ audit.status.value }}</span>
+    </h1>
+    <p>
+        {{ report.terms | length }} terms ·
+        surfaces: {{ report.surfaces | join(', ') }}
+        {% if audit.brand_domain %} · domain: {{ audit.brand_domain }}{% endif %}
+        {% if report.competitors %} · vs {{ report.competitors | join(', ') }}{% endif %}
+    </p>
+</hgroup>
+
+{% if audit.data_mode != 'live' %}
+<article class="geo-banner">
+    ⚠️ This audit contains <strong>{{ audit.data_mode }}</strong> data — one or more
+    surfaces ran in simulated mode because API keys are not configured
+    (<code>GEMINI_API_KEY</code> for Gemini, <code>SERPAPI_API_KEY</code> for AI Mode /
+    AI Overviews). Treat results as a pipeline demo, not market truth.
+</article>
+{% endif %}
+
+{% if audit.error %}
+<article class="geo-banner"><strong>Audit error:</strong> {{ audit.error }}</article>
+{% endif %}
+
+{% if report.scorecard %}
+<h2>Scorecard</h2>
+<figure>
+<table>
+    <thead>
+        <tr>
+            <th>Surface</th><th>Answered</th><th>Presence</th><th>Cited</th>
+            <th>Prominence</th><th>Sentiment</th><th>Share of voice</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for name, s in report.scorecard.surfaces.items() %}
+        <tr>
+            <td>{{ name.replace('_', ' ').title() }}</td>
+            <td>{{ s.answered }}/{{ s.queries }}</td>
+            <td>{{ (s.presence_rate * 100) | round(0) | int }}%</td>
+            <td>{{ (s.citation_rate * 100) | round(0) | int }}%</td>
+            <td>{{ (s.avg_prominence * 100) | round(0) | int }}%</td>
+            <td>{{ s.avg_sentiment }}</td>
+            <td>{{ (s.share_of_voice * 100) | round(0) | int }}%</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th>Overall</th>
+            <th>{{ report.scorecard.overall.answered }}/{{ report.scorecard.overall.queries }}</th>
+            <th>{{ (report.scorecard.overall.presence_rate * 100) | round(0) | int }}%</th>
+            <th>{{ (report.scorecard.overall.citation_rate * 100) | round(0) | int }}%</th>
+            <th>{{ (report.scorecard.overall.avg_prominence * 100) | round(0) | int }}%</th>
+            <th>{{ report.scorecard.overall.avg_sentiment }}</th>
+            <th>{{ (report.scorecard.overall.share_of_voice * 100) | round(0) | int }}%</th>
+        </tr>
+    </tbody>
+</table>
+</figure>
+{% endif %}
+
+{% if report.insights %}
+<h2>Strategic insights <small>(trust architecture)</small></h2>
+{% for rec in report.insights %}
+<details {% if rec.priority == 'P0' %}open{% endif %}>
+    <summary>
+        <span class="geo-priority geo-priority-{{ rec.priority | lower }}">{{ rec.priority }}</span>
+        <span class="geo-track geo-track-{{ rec.track }}">{{ rec.track }}</span>
+        <strong>{{ rec.title }}</strong>
+        <small>· {{ rec.pillar_label }}</small>
+    </summary>
+    <p><strong>Finding:</strong> {{ rec.finding }}</p>
+    <p><strong>Action:</strong> {{ rec.action }}</p>
+    {% if rec.affected_terms %}
+    <p><strong>Terms:</strong>
+        {% for term in rec.affected_terms %}<code>{{ term }}</code> {% endfor %}
+    </p>
+    {% endif %}
+    {% if rec.snippet %}
+    <p><strong>Starter script (JSON-LD):</strong></p>
+    <pre><code>{{ rec.snippet }}</code></pre>
+    {% endif %}
+</details>
+{% endfor %}
+{% endif %}
+
+<h2>Per-term results</h2>
+<figure>
+<table>
+    <thead>
+        <tr>
+            <th>Term</th><th>Surface</th><th>Mentioned</th><th>Cited</th>
+            <th>Sentiment</th><th>Competitors</th><th>Evidence</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in report.results %}
+        <tr>
+            <td>{{ r.term }}</td>
+            <td>{{ r.surface.replace('_', ' ') }}
+                {% if r.provider_mode == 'mock' %}<small>(mock)</small>{% endif %}
+            </td>
+            <td>{% if r.mentioned %}✅ ×{{ r.mention_count }}{% elif r.error %}⚠️{% else %}❌{% endif %}</td>
+            <td>{% if r.cited %}✅{% else %}—{% endif %}</td>
+            <td><span class="geo-sentiment geo-sentiment-{{ r.sentiment_label }}">{{ r.sentiment_label.replace('_', ' ') }}</span></td>
+            <td>
+                {% for name, count in r.competitor_mentions.items() %}
+                <small>{{ name }} ×{{ count }}</small>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{% if r.evidence %}<small>“…{{ r.evidence }}…”</small>{% elif r.error %}<small>{{ r.error }}</small>{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</figure>
+{% endblock %}

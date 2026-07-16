@@ -21,6 +21,18 @@ class TaskStatus(str, enum.Enum):
     FAILED = "failed"
 
 
+class GeoSurface(str, enum.Enum):
+    GEMINI = "gemini"
+    AI_MODE = "ai_mode"
+    AI_OVERVIEW = "ai_overview"
+
+
+class GeoAuditStatus(str, enum.Enum):
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
 task_dependencies = Table(
     "task_dependencies",
     Base.metadata,
@@ -98,3 +110,52 @@ class Task(Base):
         secondaryjoin=id == task_dependencies.c.depends_on_id,
         backref="dependents",
     )
+
+
+class GeoAudit(Base):
+    __tablename__ = "geo_audits"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brand: Mapped[str] = mapped_column(String(255))
+    brand_domain: Mapped[str | None] = mapped_column(String(255), default=None)
+    competitors: Mapped[str | None] = mapped_column(Text, default=None)  # comma-separated
+    terms: Mapped[str] = mapped_column(Text)  # newline-separated
+    surfaces: Mapped[str] = mapped_column(String(255))  # comma-separated GeoSurface values
+    status: Mapped[GeoAuditStatus] = mapped_column(
+        Enum(GeoAuditStatus), default=GeoAuditStatus.RUNNING
+    )
+    data_mode: Mapped[str] = mapped_column(String(20), default="mock")  # live | mock | mixed
+    scorecard_json: Mapped[str | None] = mapped_column(Text, default=None)
+    insights_json: Mapped[str | None] = mapped_column(Text, default=None)
+    error: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, default=None)
+
+    results: Mapped[list["GeoQueryResult"]] = relationship(
+        back_populates="audit", cascade="all, delete-orphan", order_by="GeoQueryResult.id"
+    )
+
+
+class GeoQueryResult(Base):
+    __tablename__ = "geo_query_results"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    audit_id: Mapped[int] = mapped_column(
+        ForeignKey("geo_audits.id", ondelete="CASCADE")
+    )
+    term: Mapped[str] = mapped_column(String(500))
+    surface: Mapped[GeoSurface] = mapped_column(Enum(GeoSurface))
+    provider_mode: Mapped[str] = mapped_column(String(20), default="mock")  # live | mock
+    response_text: Mapped[str | None] = mapped_column(Text, default=None)
+    mentioned: Mapped[bool] = mapped_column(default=False)
+    mention_count: Mapped[int] = mapped_column(Integer, default=0)
+    prominence: Mapped[float] = mapped_column(default=0.0)
+    cited: Mapped[bool] = mapped_column(default=False)
+    citations_json: Mapped[str | None] = mapped_column(Text, default=None)
+    competitor_mentions_json: Mapped[str | None] = mapped_column(Text, default=None)
+    sentiment_score: Mapped[float] = mapped_column(default=0.0)
+    sentiment_label: Mapped[str] = mapped_column(String(20), default="not_mentioned")
+    error: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    audit: Mapped["GeoAudit"] = relationship(back_populates="results")

@@ -20,6 +20,7 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/plans/{plan_id}/tasks/new", response_class=HTMLResponse)
 def new_task_form(request: Request, plan_id: int):
     return templates.TemplateResponse(
+        request,
         "partials/task_form.html", {"request": request, "plan_id": plan_id}
     )
 
@@ -48,6 +49,7 @@ def create_task(
     db.refresh(plan)
     progress = calculate_plan_progress(db, plan_id)
     return templates.TemplateResponse(
+        request,
         "partials/task_list.html",
         {"request": request, "plan": plan, "progress": progress},
     )
@@ -73,11 +75,13 @@ def change_task_status(
 
     # Return task row + OOB progress bar
     task_html = templates.TemplateResponse(
+        request,
         "partials/task_row.html",
         {"request": request, "task": task, "plan": plan},
     ).body.decode()
 
     progress_html = templates.TemplateResponse(
+        request,
         "partials/progress_bar.html",
         {"request": request, "progress": progress, "plan_id": plan.id},
     ).body.decode()
@@ -110,6 +114,7 @@ def add_task_dependency(
     plan = task.plan
     progress = calculate_plan_progress(db, plan.id)
     return templates.TemplateResponse(
+        request,
         "partials/task_list.html",
         {"request": request, "plan": plan, "progress": progress},
     )
@@ -131,6 +136,7 @@ def remove_task_dependency(
     plan = task.plan
     progress = calculate_plan_progress(db, plan.id)
     return templates.TemplateResponse(
+        request,
         "partials/task_list.html",
         {"request": request, "plan": plan, "progress": progress},
     )

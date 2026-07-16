@@ -1,0 +1,29 @@
+<form hx-post="/geo/audits" hx-target="#geo-audit-list" hx-swap="innerHTML"
+      hx-indicator="#geo-running">
+    <div class="grid">
+        <label>Brand
+            <input type="text" name="brand" placeholder="Acme Outdoor" required>
+        </label>
+        <label>Brand domain
+            <input type="text" name="brand_domain" placeholder="acmeoutdoor.com">
+        </label>
+    </div>
+    <label>Competitors <small>(comma-separated)</small>
+        <input type="text" name="competitors" placeholder="TrailPro, Summit Gear">
+    </label>
+    <label>Terms to audit <small>(one per line or comma-separated)</small>
+        <textarea name="terms" rows="4" required
+                  placeholder="best 2-person backpacking tent&#10;acme outdoor reviews&#10;lightweight tent comparison"></textarea>
+    </label>
+    <fieldset>
+        <legend>Surfaces</legend>
+        {% for surface in all_surfaces %}
+        <label>
+            <input type="checkbox" name="surfaces" value="{{ surface }}" checked>
+            {{ surface.replace('_', ' ').title() }}
+        </label>
+        {% endfor %}
+    </fieldset>
+    <button type="submit">Run diagnostic</button>
+    <span id="geo-running" class="htmx-indicator" aria-busy="true">Querying surfaces…</span>
+</form>

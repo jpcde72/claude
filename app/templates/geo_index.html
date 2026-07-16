@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}GEO Audit — Intent Planner{% endblock %}
+{% block content %}
+<hgroup>
+    <h1>GEO Audit Diagnostic</h1>
+    <p>Discover brand presence, citations, and sentiment across Google Gemini, AI Mode, and AI Overviews.</p>
+</hgroup>
+
+<article>
+    <header><strong>Run a new diagnostic</strong></header>
+    {% include "partials/geo_audit_form.html" %}
+</article>
+
+<h2>Past audits</h2>
+<div id="geo-audit-list">
+    {% include "partials/geo_audit_list.html" %}
+</div>
+{% endblock %}

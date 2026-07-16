@@ -184,3 +184,44 @@
     border-radius: 0.5rem;
     margin-bottom: 1rem;
 }
+
+/* --- GEO audit --- */
+.geo-banner {
+    border-left: 4px solid #b45309;
+    background: #fffbeb;
+    padding: 0.75rem 1rem;
+}
+
+.geo-mode-mock, .geo-mode-mixed { color: #b45309; font-weight: 600; }
+.geo-mode-live { color: #15803d; font-weight: 600; }
+
+.geo-priority, .geo-track {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-right: 0.25rem;
+}
+
+.geo-priority-p0 { background: #fee2e2; color: #dc2626; }
+.geo-priority-p1 { background: #fef3c7; color: #b45309; }
+.geo-priority-p2 { background: #e2e8f0; color: #475569; }
+
+.geo-track-content { background: #dbeafe; color: #1d4ed8; }
+.geo-track-technical { background: #f3e8ff; color: #7c3aed; }
+.geo-track-pdp { background: #dcfce7; color: #15803d; }
+.geo-track-scripting { background: #fce7f3; color: #be185d; }
+
+.geo-sentiment-positive { color: #15803d; font-weight: 600; }
+.geo-sentiment-negative { color: #dc2626; font-weight: 600; }
+.geo-sentiment-mixed { color: #b45309; font-weight: 600; }
+.geo-sentiment-neutral { color: #475569; }
+.geo-sentiment-not_mentioned { color: #94a3b8; }
+
+.geo-delete { padding: 0.15rem 0.6rem; font-size: 0.75rem; width: auto; }
+
+.htmx-indicator { display: none; margin-left: 0.75rem; }
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { display: inline-block; }

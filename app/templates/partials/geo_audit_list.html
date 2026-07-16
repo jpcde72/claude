@@ -1,0 +1,28 @@
+{% if audits %}
+<div class="grid-list">
+    {% for audit in audits %}
+    <article class="intent-card">
+        <header>
+            <a href="/geo/audits/{{ audit.id }}"><strong>{{ audit.brand }}</strong></a>
+            <span class="status-badge status-{{ audit.status.value }}">{{ audit.status.value }}</span>
+        </header>
+        <p>
+            <small>
+                {{ audit.terms.splitlines() | length }} terms ·
+                {{ audit.surfaces.split(',') | length }} surfaces ·
+                <span class="geo-mode geo-mode-{{ audit.data_mode }}">{{ audit.data_mode }} data</span>
+            </small>
+        </p>
+        <footer>
+            <small>{{ audit.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            <button class="outline secondary geo-delete"
+                    hx-delete="/geo/audits/{{ audit.id }}"
+                    hx-target="closest article" hx-swap="outerHTML"
+                    hx-confirm="Delete this audit?">Delete</button>
+        </footer>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p><em>No audits yet. Run your first diagnostic above.</em></p>
+{% endif %}
