@@ -18,16 +18,15 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
     for intent in intents:
         progress_map[intent.id] = calculate_intent_progress(db, intent.id)
     return templates.TemplateResponse(
+        request,
         "index.html",
-        {"request": request, "intents": intents, "progress_map": progress_map},
+        context={"intents": intents, "progress_map": progress_map},
     )
 
 
 @router.get("/intents/new", response_class=HTMLResponse)
 def new_intent_form(request: Request):
-    return templates.TemplateResponse(
-        "partials/intent_form.html", {"request": request}
-    )
+    return templates.TemplateResponse(request, "partials/intent_form.html")
 
 
 @router.post("/intents", response_class=HTMLResponse)
@@ -46,8 +45,9 @@ def create_intent(
     for i in intents:
         progress_map[i.id] = calculate_intent_progress(db, i.id)
     return templates.TemplateResponse(
+        request,
         "partials/intent_list.html",
-        {"request": request, "intents": intents, "progress_map": progress_map},
+        context={"intents": intents, "progress_map": progress_map},
     )
 
 
@@ -58,8 +58,9 @@ def intent_detail(request: Request, intent_id: int, db: Session = Depends(get_db
         return HTMLResponse("<p>Intent not found</p>", status_code=404)
     progress = calculate_intent_progress(db, intent_id)
     return templates.TemplateResponse(
+        request,
         "intent_detail.html",
-        {"request": request, "intent": intent, "progress": progress},
+        context={"intent": intent, "progress": progress},
     )
 
 
@@ -85,8 +86,9 @@ def update_intent(
     db.refresh(intent)
     progress = calculate_intent_progress(db, intent_id)
     return templates.TemplateResponse(
+        request,
         "intent_detail.html",
-        {"request": request, "intent": intent, "progress": progress},
+        context={"intent": intent, "progress": progress},
     )
 
 
