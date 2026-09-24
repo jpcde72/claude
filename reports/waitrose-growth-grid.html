@@ -1,0 +1,182 @@
+<title>Waitrose Growth Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;1,400&family=Outfit:wght@300;500;600&family=Space+Mono&display=swap">
+<style>
+:root{
+  --violet:#4B2E83;--purple:#7B3FAB;--magenta:#C026A0;--coral:#F05A28;--pink:#F78DA7;--solar:#FFCC00;
+  --lilac:#B08AE0;--bg:#0A0A0A;--panel:#141414;--panel2:#1B1B1B;--line:#262626;--ink:#FFFFFF;--ink2:#B0B0B0;--ink3:#7A7A7A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"Outfit",Helvetica,Arial,sans-serif;font-weight:300;font-size:16px;line-height:1.6;margin:0}
+.bar{height:6px;background:linear-gradient(90deg,var(--violet),var(--purple),var(--magenta),var(--coral),var(--pink),var(--solar))}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:clamp(16px,4vw,48px);padding-block:40px 64px;display:grid;gap:56px}
+.kicker,.label,th,.mono{font-family:"Space Mono","Courier New",monospace;text-transform:uppercase;letter-spacing:.25em;font-size:11px;color:var(--ink2);font-weight:400}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(44px,8vw,88px)}
+h2{font-size:clamp(28px,4vw,40px)}
+h3{font-family:"Outfit",sans-serif;font-weight:500;font-size:19px;line-height:1.3}
+.grad{font-style:italic;background:linear-gradient(90deg,var(--magenta),var(--coral),var(--solar));-webkit-background-clip:text;background-clip:text;color:transparent}
+p{margin:0;max-width:68ch;color:var(--ink2)}
+p b,li b{color:var(--ink);font-weight:500}
+.hero{display:grid;gap:20px;position:relative}
+.hero .thesis{font-size:clamp(19px,2.4vw,24px);color:var(--ink);max-width:40ch;font-weight:300}
+.mark{position:absolute;right:0;top:-10px;width:min(420px,55%);opacity:.9;pointer-events:none}
+.mark path{fill:none;stroke-width:3;stroke-linecap:round}
+.section{display:grid;gap:24px}
+.section>header{display:grid;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--panel);padding:22px;display:grid;gap:6px;align-content:start}
+.stat .n{font-weight:600;font-size:clamp(34px,5vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.stat.take .n{color:var(--solar)}
+.stat .d{font-size:14px;color:var(--ink2)}
+.panel{background:var(--panel);border-radius:14px;padding:24px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink)}
+td.num{text-align:right}
+td small{display:block;color:var(--ink3);font-size:12px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+.fix{color:var(--coral);border:1px solid var(--coral)}
+.leverage{color:var(--lilac);border:1px solid var(--lilac)}
+.hold{color:var(--ink3);border:1px solid var(--line)}
+.split{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--line);min-width:120px}
+.split i{display:block;height:100%}
+.split .l1{background:var(--magenta)}.split .l3{background:var(--purple)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--ink2)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--panel);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start}
+.card p{font-size:15px}
+ul.clean{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+ul.clean li{color:var(--ink2);max-width:72ch;padding-left:18px;position:relative}
+ul.clean li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:2px;background:var(--coral)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--panel2);color:var(--ink2);border:1px solid var(--line)}
+.angle{display:grid;gap:8px;padding:16px 0;border-bottom:1px solid var(--line)}
+.angle:last-child{border-bottom:0}
+.angle .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.callout{border-left:2px solid var(--coral);padding:4px 0 4px 18px;color:var(--ink2);max-width:72ch}
+.next{background:linear-gradient(135deg,rgba(75,46,131,.35),rgba(240,90,40,.18));border-radius:14px;padding:28px;display:grid;gap:10px}
+.next .t{font-family:"Fraunces",Georgia,serif;font-size:clamp(22px,3vw,30px);color:var(--ink);line-height:1.25;max-width:40ch}
+svg text{font-family:"Space Mono",monospace;font-size:11px;fill:var(--ink2)}
+.foot{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:28px}
+.foot ol{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13px;color:var(--ink3)}
+.foot a{color:var(--ink2)}
+.sig{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline}
+.sig .wm{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:22px}
+a{color:var(--pink)}
+a:focus-visible{outline:2px solid var(--solar);outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;gap:10px}
+.nav a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--ink2);border:1px solid var(--magenta);border-radius:999px;padding:6px 14px}
+.meter{display:inline-block;width:64px;height:6px;border-radius:3px;background:var(--line);vertical-align:middle;margin-left:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--purple)}
+@media (max-width:640px){.mark{opacity:.35;width:80%}}
+@media (prefers-reduced-motion:no-preference){.mark path{stroke-dasharray:1400;stroke-dashoffset:0;animation:draw 1.4s ease-out both}}
+@keyframes draw{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+</style>
+<div class="bar"></div>
+<main class="wrap">
+<section class="hero">
+  <svg class="mark" viewBox="0 0 800 340" aria-hidden="true"><path d="M 20 310 C 160 290, 260 100, 400 100 S 640 290, 780 310" stroke="#4B2E83" style="animation-delay:0.00s"/><path d="M 20 304 C 160 284, 260 116, 400 116 S 640 284, 780 304" stroke="#7B3FAB" style="animation-delay:0.12s"/><path d="M 20 298 C 160 278, 260 132, 400 132 S 640 278, 780 298" stroke="#C026A0" style="animation-delay:0.24s"/><path d="M 20 292 C 160 272, 260 148, 400 148 S 640 272, 780 292" stroke="#F05A28" style="animation-delay:0.36s"/><path d="M 20 286 C 160 266, 260 164, 400 164 S 640 266, 780 286" stroke="#F78DA7" style="animation-delay:0.48s"/><path d="M 20 280 C 160 260, 260 180, 400 180 S 640 260, 780 280" stroke="#FFCC00" style="animation-delay:0.60s"/></svg>
+  <div class="kicker">Growth Grid · UK grocery · Pilot v0.3</div>
+  <h1>Waitrose<br><span class="grad">get provable</span></h1>
+  <p class="thesis">Agents can already buy from Waitrose. On the weekly shop, they can&#x27;t yet justify choosing it.</p>
+  <nav class="nav"><a href="#grid">The grid</a><a href="#layers">What to do</a><a href="#angles">Creative</a><a href="#measure">Measurement</a></nav>
+</section>
+
+<section class="section"><div class="stats"><div class="stat"><div class="n">4.5%</div><div class="d">GB grocery share, 12 wks to 9 Aug 2026</div></div><div class="stat"><div class="n">+2.8%</div><div class="d">Sales growth YoY, below the leaders</div></div><div class="stat"><div class="n">160k</div><div class="d">Home deliveries a week: transactable by design</div></div><div class="stat take"><div class="n">+14.6</div><div class="d">Replenish Heat: the number this report turns on</div></div></div></section>
+
+<section class="section" id="grid">
+  <header><div class="kicker">01 · The grid</div><h2>Where the gaps and strengths sit</h2>
+  <p>Heat is the importance-weighted gap between what people need and what Waitrose delivers in each Moment. Coral bars are gaps to fix. Lilac bars are strengths to lead the creative with.</p></header>
+  <div class="panel"><svg viewBox="0 0 640 280" width="100%" role="img" aria-label="Heat per Moment"><line x1="110.0" y1="8" x2="110.0" y2="254" stroke="#262626" stroke-width="1"/><text x="110.0" y="272" text-anchor="middle">-30</text><line x1="195.7" y1="8" x2="195.7" y2="254" stroke="#262626" stroke-width="1"/><text x="195.7" y="272" text-anchor="middle">-20</text><line x1="281.3" y1="8" x2="281.3" y2="254" stroke="#262626" stroke-width="1"/><text x="281.3" y="272" text-anchor="middle">-10</text><line x1="367.0" y1="8" x2="367.0" y2="254" stroke="#262626" stroke-width="1"/><text x="367.0" y="272" text-anchor="middle">0</text><line x1="452.7" y1="8" x2="452.7" y2="254" stroke="#262626" stroke-width="1"/><text x="452.7" y="272" text-anchor="middle">+10</text><line x1="538.3" y1="8" x2="538.3" y2="254" stroke="#262626" stroke-width="1"/><text x="538.3" y="272" text-anchor="middle">+20</text><line x1="624.0" y1="8" x2="624.0" y2="254" stroke="#262626" stroke-width="1"/><text x="624.0" y="272" text-anchor="middle">+30</text><line x1="409.8" y1="8" x2="409.8" y2="254" stroke="#7A7A7A" stroke-dasharray="3 4"/><line x1="281.3" y1="8" x2="281.3" y2="254" stroke="#7A7A7A" stroke-dasharray="3 4"/><text x="0" y="29" style="text-transform:uppercase;letter-spacing:.15em">replenish</text><rect x="367.0" y="18" width="125.1" height="16" rx="3" fill="#F05A28"/><text x="498.1" y="30" text-anchor="start" style="fill:#FFFFFF">+14.6</text><text x="0" y="69" style="text-transform:uppercase;letter-spacing:.15em">plan</text><rect x="367.0" y="58" width="17.1" height="16" rx="3" fill="#7A7A7A"/><text x="390.1" y="70" text-anchor="start" style="fill:#FFFFFF">+2.0</text><text x="0" y="109" style="text-transform:uppercase;letter-spacing:.15em">discover</text><rect x="189.7" y="98" width="177.3" height="16" rx="3" fill="#B08AE0"/><text x="183.7" y="110" text-anchor="end" style="fill:#FFFFFF">-20.7</text><text x="0" y="149" style="text-transform:uppercase;letter-spacing:.15em">manage</text><rect x="367.0" y="138" width="22.3" height="16" rx="3" fill="#7A7A7A"/><text x="395.3" y="150" text-anchor="start" style="fill:#FFFFFF">+2.6</text><text x="0" y="189" style="text-transform:uppercase;letter-spacing:.15em">celebrate</text><rect x="151.1" y="178" width="215.9" height="16" rx="3" fill="#B08AE0"/><text x="145.1" y="190" text-anchor="end" style="fill:#FFFFFF">-25.2</text><text x="0" y="229" style="text-transform:uppercase;letter-spacing:.15em">care</text><rect x="205.9" y="218" width="161.1" height="16" rx="3" fill="#B08AE0"/><text x="199.9" y="230" text-anchor="end" style="fill:#FFFFFF">-18.8</text></svg></div>
+  <div class="panel scroll"><table>
+<thead><tr><th>Moment</th><th style="text-align:right">Heat</th><th>Role</th><th style="text-align:right">Delegation</th><th>Emphasis split</th><th style="text-align:right">Angles</th></tr></thead>
+<tbody><tr>
+<td><b style="font-weight:500">Replenish</b><small>“We're running low.”</small></td>
+<td class="num">+14.6</td>
+<td><span class="pill fix">fix</span></td>
+<td class="num">0.75<span class="meter"><i style="width:75%"></i></span></td>
+<td><div class="split" title="L1 16.2% · L3 43.3%"><i class="l1" style="width:27%"></i><i class="l3" style="flex:1"></i></div><small>16.2% memory · 43.3% protocol</small></td>
+<td class="num">2</td>
+</tr><tr>
+<td><b style="font-weight:500">Plan</b><small>“What are we doing this week?”</small></td>
+<td class="num">+2.0</td>
+<td><span class="pill hold">hold</span></td>
+<td class="num">0.61<span class="meter"><i style="width:61%"></i></span></td>
+<td><div class="split" title="L1 13.9% · L3 22.3%"><i class="l1" style="width:38%"></i><i class="l3" style="flex:1"></i></div><small>13.9% memory · 22.3% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Discover</b><small>“Show me something new.”</small></td>
+<td class="num">-20.7</td>
+<td><span class="pill leverage">leverage</span></td>
+<td class="num">0.42<span class="meter"><i style="width:42%"></i></span></td>
+<td><div class="split" title="L1 10.4% · L3 8.5%"><i class="l1" style="width:55%"></i><i class="l3" style="flex:1"></i></div><small>10.4% memory · 8.5% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Manage</b><small>“This needs handling.”</small></td>
+<td class="num">+2.6</td>
+<td><span class="pill hold">hold</span></td>
+<td class="num">0.47<span class="meter"><i style="width:47%"></i></span></td>
+<td><div class="split" title="L1 15.6% · L3 15.4%"><i class="l1" style="width:50%"></i><i class="l3" style="flex:1"></i></div><small>15.6% memory · 15.4% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Celebrate</b><small>“This matters.”</small></td>
+<td class="num">-25.2</td>
+<td><span class="pill leverage">leverage</span></td>
+<td class="num">0.19<span class="meter"><i style="width:19%"></i></span></td>
+<td><div class="split" title="L1 21.4% · L3 6.0%"><i class="l1" style="width:78%"></i><i class="l3" style="flex:1"></i></div><small>21.4% memory · 6.0% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Care</b><small>“This is my responsibility.”</small></td>
+<td class="num">-18.8</td>
+<td><span class="pill leverage">leverage</span></td>
+<td class="num">0.14<span class="meter"><i style="width:14%"></i></span></td>
+<td><div class="split" title="L1 22.5% · L3 4.4%"><i class="l1" style="width:84%"></i><i class="l3" style="flex:1"></i></div><small>22.5% memory · 4.4% protocol</small></td>
+<td class="num">0 <span class="pill fix">white space</span></td>
+</tr></tbody></table>
+<div class="legend" style="margin-top:14px"><span style="--c:var(--magenta)">L1 memory share (people decide)</span><span style="--c:var(--purple)">L3 protocol share (agents decide)</span></div></div>
+  <p class="callout">Emphasis follows the size of each Moment in the category, split by who decides it. The shares describe where memory-building and agent-readiness work should go. They are not budget splits, and reach itself is never cut.</p>
+</section>
+
+<section class="section">
+  <header><div class="kicker">02 · Diagnosis</div><h2>What the grid says</h2></header>
+  <ul class="clean"><li>Waitrose's grid is a strength machine with a weekly-shop hole. It leads on <b>Celebrate</b>, <b>Care</b> and <b>Discover</b>, the Moments where quality, provenance and hosting matter.</li><li>Its one real gap is <b>Budget fit</b> in Replenish (gap +45). The same gap shows up again as cost-of-living anxiety (+35) in Manage.</li><li>The Agentic Gate is high (<b>0.94</b>), so 75% of Replenish is modelled as agent-decided. Agents compare price in exactly that Moment, which leaves the gap exposed to machine comparison.</li></ul>
+  <div class="cards">
+<div class="card scroll"><div class="label">Biggest gaps</div><table><thead><tr><th>Intent</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th><th style="text-align:right">Gap</th></tr></thead><tbody><tr><td>Budget fit<small>CTXT-P1 · replenish</small></td><td class="num">90</td><td class="num">45</td><td class="num" style="color:var(--coral)">+45</td></tr><tr><td>Anxiety reduction (cost of living)<small>EMOT-P3 · manage</small></td><td class="num">70</td><td class="num">35</td><td class="num" style="color:var(--coral)">+35</td></tr><tr><td>Simplification<small>COGN-P1 · plan</small></td><td class="num">65</td><td class="num">55</td><td class="num" style="color:var(--coral)">+10</td></tr><tr><td>Efficiency (quick shop)<small>FUNC-P1 · replenish</small></td><td class="num">65</td><td class="num">60</td><td class="num" style="color:var(--coral)">+5</td></tr><tr><td>Routine integration<small>CTXT-P2 · replenish</small></td><td class="num">70</td><td class="num">70</td><td class="num" style="color:var(--lilac)">+0</td></tr></tbody></table></div>
+<div class="card scroll"><div class="label">Biggest strengths</div><table><thead><tr><th>Intent</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th><th style="text-align:right">Gap</th></tr></thead><tbody><tr><td>Values alignment (sourcing, welfare)<small>SOCL-P3 · care</small></td><td class="num">50</td><td class="num">85</td><td class="num" style="color:var(--lilac)">-35</td></tr><tr><td>Authenticity<small>COGN-P4 · care</small></td><td class="num">45</td><td class="num">75</td><td class="num" style="color:var(--lilac)">-30</td></tr><tr><td>Self-reward<small>EMOT-P4 · celebrate</small></td><td class="num">55</td><td class="num">85</td><td class="num" style="color:var(--lilac)">-30</td></tr><tr><td>Occasion fit<small>CTXT-P5 · celebrate</small></td><td class="num">60</td><td class="num">85</td><td class="num" style="color:var(--lilac)">-25</td></tr><tr><td>Pleasure (taste)<small>EMOT-P2 · discover</small></td><td class="num">60</td><td class="num">85</td><td class="num" style="color:var(--lilac)">-25</td></tr></tbody></table></div>
+</div>
+  <div class="cards"><div class="card scroll"><div class="label">Agentic Gate · 0.94</div><table><thead><tr><th>Agentic intent (modulator)</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th></tr></thead><tbody><tr><td>Delegation confidence<small>AGNT-P1</small></td><td class="num">40</td><td class="num">35</td></tr><tr><td>Transparency<small>AGNT-P2</small></td><td class="num">50</td><td class="num">50</td></tr><tr><td>Override availability<small>AGNT-P3</small></td><td class="num">45</td><td class="num">50</td></tr><tr><td>System compatibility<small>AGNT-P4</small></td><td class="num">40</td><td class="num">30</td></tr></tbody></table>
+  <p style="font-size:14px">The gate is delivery over importance across these four intents. It scales how much of every Moment agents are modelled to decide.</p></div></div>
+</section>
+
+<section class="section" id="layers">
+  <header><div class="kicker">03 · What to do, layer by layer</div><h2>Reach first, then the rest</h2></header>
+  <div class="cards"><div class="card"><div class="label">L1 · Reach</div><h3>Reach past the affluent core</h3><p>Growth of +2.8% trails the leaders. Growth comes from light and non-buyers who trade up now and then, not from a sharper affluent target. Test penetration and whether reach is capped by affluence targeting. Reach and penetration data were not retrieved for this pilot.</p></div><div class="card"><div class="label">L2 · Transmission</div><h3>Speak to the occasion, not the class</h3><p>The Place-bound Civic archetype favours the high-street anchor and the Partnership as a civic institution. For the foodie and host tribe, avoid class costume. Food editors are the human gatekeepers; price-comparing agents are the new ones.</p></div><div class="card"><div class="label">L3 · Protocol</div><h3>Get justified: make value provable</h3><p>Already eligible. The fight is in Justification: a verifiable value claim on staples (the Essentials range, basket-level comparisons) that an agent can defend. Protect repeat-basket defaults before agents re-optimise them.</p></div><div class="card"><div class="label">U · Utility</div><h3>A “usual shop, value-checked” utility</h3><p>Shows the weekly basket against a comparison on staples and swaps to Essentials where equivalent. It turns the price gap into proof, using Tier 2 order history.</p></div></div>
+</section>
+
+<section class="section" id="angles">
+  <header><div class="kicker">04 · Creative signal</div><h2>The Angle library</h2>
+  <p>Moments reach the market through creative, never through audience targeting. Each Angle is a spine of mindset × messaging × proof × context. The platform's own model finds the people in that moment.</p></header>
+  <div class="panel"><div class="angle"><div class="top"><h3>Partnership Standards</h3><span class="pill leverage">CROSS</span></div><div class="chips"><span class="chip">Health-conscious/Label-reader</span><span class="chip">Provenance/standards [CUSTOM: candidate Messaging value]</span><span class="chip">Sustainability/sourcing certification</span><span class="chip">Family meal table</span></div></div><div class="angle"><div class="top"><h3>Essentials, Honestly Priced</h3><span class="pill hold">replenish</span></div><div class="chips"><span class="chip">Price-conscious/Deal-seeker</span><span class="chip">Price-value</span><span class="chip">Price-comparison callout</span><span class="chip">In-store/aisle</span></div></div><div class="angle"><div class="top"><h3>Your Usual, Delivered</h3><span class="pill hold">replenish</span></div><div class="chips"><span class="chip">Habitual/Routine-repeater</span><span class="chip">Habit-reinforcement</span><span class="chip">Review/rating callout</span><span class="chip">In-kitchen</span></div></div><div class="angle"><div class="top"><h3>Dinner, Sorted</h3><span class="pill hold">plan</span></div><div class="chips"><span class="chip">Convenience-first/Time-poor</span><span class="chip">Convenience/time-saving</span><span class="chip">Chef/creator endorsement</span><span class="chip">In-kitchen</span></div></div><div class="angle"><div class="top"><h3>Free-From Without the Fuss</h3><span class="pill hold">manage</span></div><div class="chips"><span class="chip">Health-conscious/Label-reader</span><span class="chip">Health/functional benefit</span><span class="chip">Nutrition-label/ingredient callout</span><span class="chip">In-kitchen</span></div></div><div class="angle"><div class="top"><h3>Hosting, Done Properly</h3><span class="pill hold">celebrate</span></div><div class="chips"><span class="chip">Occasion-driven/Host-mode</span><span class="chip">Occasion-specific</span><span class="chip">Chef/creator endorsement</span><span class="chip">Seasonal/holiday</span></div></div><div class="angle"><div class="top"><h3>New This Week</h3><span class="pill hold">discover</span></div><div class="chips"><span class="chip">Adventurous/Recipe-explorer</span><span class="chip">Discovery/new-flavor</span><span class="chip">Chef/creator endorsement</span><span class="chip">In-kitchen</span></div></div></div>
+  <p class="callout">White space in <b>Care</b>: the strongest leverage Moment has no dedicated Angle, so it only appears as the general CROSS argument. Candidate: <b>Feed Them Well</b> (caring-parent mindset × provenance/standards × sourcing certification × family meal table).</p>
+</section>
+
+<section class="section" id="measure">
+  <header><div class="kicker">05 · Measurement</div><h2>Measure each layer on its own terms</h2></header>
+  <div class="panel scroll"><table><tbody><tr><td class='mono' style='color:var(--ink)'>L1</td><td>Penetration among light buyers; mental availability for weekly-shop entry points, not just occasions</td></tr><tr><td class='mono' style='color:var(--ink)'>L2</td><td>Authority and editor mentions; share of the hosting conversation</td></tr><tr><td class='mono' style='color:var(--ink)'>L3</td><td>Justification win rate: share of agent basket comparisons where Waitrose is chosen or defended</td></tr><tr><td class='mono' style='color:var(--ink)'>Causal</td><td>Incrementality test of value-proof creative</td></tr></tbody></table></div>
+</section>
+
+<section class="next"><div class="kicker" style="color:var(--solar)">The one thing to do next</div><div class="t">Build the value-proof Angle and the value-checked basket together, so the weekly shop has an argument an agent can repeat.</div>
+<p style="font-size:14px">Compare with the <a href="https://claude.ai/artifact/5c9QE3etorQszuFhBtPsAa">Lidl GB report</a>, and see the <a href="https://claude.ai/artifact/3dMBGL8wHNrNS7s6eQPY5S">diagnostic report</a> for why the two grids differ.</p></section>
+
+<footer class="foot">
+  <div class="label">Sources and method</div>
+  <p style="font-size:14px">Pilot v0.3, 24 Sep 2026. Market facts are sourced below; shares are Worldpanel figures as reported in the trade press. Intent importance is scored at category level and is identical for both brands. Delivery is analyst judgement anchored to the sources (inferred, medium confidence). Intent IDs are provisional until the canonical 47-intent taxonomy is loaded. Delegation priors are hypotheses to validate.</p>
+  <ol><li><a href="https://www.grocerygazette.co.uk/2026/07/21/lidl-leads-grocery-market-share-growth/">Grocery Gazette — Worldpanel shares (Jul 2026)</a></li><li><a href="https://www.retailgazette.co.uk/blog/2026/03/waitrose-ai-satalia-optimisation/">Retail Gazette — Waitrose AI route optimisation (Mar 2026)</a></li><li><a href="https://www.cxnetwork.com/artificial-intelligence/articles/waitrose-personalization-ai">CX Network — Waitrose AI personalisation (vendor claim)</a></li><li><a href="https://www.forbes.com/sites/bernardmarr/2026/08/12/tescos-ai-agents-could-soon-do-your-shopping-for-you/">Forbes — Tesco AI agents (Aug 2026)</a></li><li><a href="https://www.retail-week.com/technology/chatgpt-agent-mode-on-trial-how-sainsburys-wickes-and-more-handle-ai-as-a-customer/7049409.article">Retail Week — ChatGPT agent mode vs retailers</a></li></ol>
+  <div class="sig"><span class="wm">jean-paul</span><span class="kicker">Where strategy meets sunrise</span></div>
+  <p style="font-size:12px;color:var(--ink3)">Growth Grid framework and IP: Jean-Paul Edwards. Independent analysis; not affiliated with or endorsed by the brands shown.</p>
+</footer>
+</main>
+<div class="bar"></div>

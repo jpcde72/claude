@@ -1,0 +1,182 @@
+<title>Lidl Growth Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;1,400&family=Outfit:wght@300;500;600&family=Space+Mono&display=swap">
+<style>
+:root{
+  --violet:#4B2E83;--purple:#7B3FAB;--magenta:#C026A0;--coral:#F05A28;--pink:#F78DA7;--solar:#FFCC00;
+  --lilac:#B08AE0;--bg:#0A0A0A;--panel:#141414;--panel2:#1B1B1B;--line:#262626;--ink:#FFFFFF;--ink2:#B0B0B0;--ink3:#7A7A7A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"Outfit",Helvetica,Arial,sans-serif;font-weight:300;font-size:16px;line-height:1.6;margin:0}
+.bar{height:6px;background:linear-gradient(90deg,var(--violet),var(--purple),var(--magenta),var(--coral),var(--pink),var(--solar))}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:clamp(16px,4vw,48px);padding-block:40px 64px;display:grid;gap:56px}
+.kicker,.label,th,.mono{font-family:"Space Mono","Courier New",monospace;text-transform:uppercase;letter-spacing:.25em;font-size:11px;color:var(--ink2);font-weight:400}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(44px,8vw,88px)}
+h2{font-size:clamp(28px,4vw,40px)}
+h3{font-family:"Outfit",sans-serif;font-weight:500;font-size:19px;line-height:1.3}
+.grad{font-style:italic;background:linear-gradient(90deg,var(--magenta),var(--coral),var(--solar));-webkit-background-clip:text;background-clip:text;color:transparent}
+p{margin:0;max-width:68ch;color:var(--ink2)}
+p b,li b{color:var(--ink);font-weight:500}
+.hero{display:grid;gap:20px;position:relative}
+.hero .thesis{font-size:clamp(19px,2.4vw,24px);color:var(--ink);max-width:40ch;font-weight:300}
+.mark{position:absolute;right:0;top:-10px;width:min(420px,55%);opacity:.9;pointer-events:none}
+.mark path{fill:none;stroke-width:3;stroke-linecap:round}
+.section{display:grid;gap:24px}
+.section>header{display:grid;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--panel);padding:22px;display:grid;gap:6px;align-content:start}
+.stat .n{font-weight:600;font-size:clamp(34px,5vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.stat.take .n{color:var(--solar)}
+.stat .d{font-size:14px;color:var(--ink2)}
+.panel{background:var(--panel);border-radius:14px;padding:24px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink)}
+td.num{text-align:right}
+td small{display:block;color:var(--ink3);font-size:12px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+.fix{color:var(--coral);border:1px solid var(--coral)}
+.leverage{color:var(--lilac);border:1px solid var(--lilac)}
+.hold{color:var(--ink3);border:1px solid var(--line)}
+.split{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--line);min-width:120px}
+.split i{display:block;height:100%}
+.split .l1{background:var(--magenta)}.split .l3{background:var(--purple)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--ink2)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--panel);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start}
+.card p{font-size:15px}
+ul.clean{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+ul.clean li{color:var(--ink2);max-width:72ch;padding-left:18px;position:relative}
+ul.clean li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:2px;background:var(--coral)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--panel2);color:var(--ink2);border:1px solid var(--line)}
+.angle{display:grid;gap:8px;padding:16px 0;border-bottom:1px solid var(--line)}
+.angle:last-child{border-bottom:0}
+.angle .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.callout{border-left:2px solid var(--coral);padding:4px 0 4px 18px;color:var(--ink2);max-width:72ch}
+.next{background:linear-gradient(135deg,rgba(75,46,131,.35),rgba(240,90,40,.18));border-radius:14px;padding:28px;display:grid;gap:10px}
+.next .t{font-family:"Fraunces",Georgia,serif;font-size:clamp(22px,3vw,30px);color:var(--ink);line-height:1.25;max-width:40ch}
+svg text{font-family:"Space Mono",monospace;font-size:11px;fill:var(--ink2)}
+.foot{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:28px}
+.foot ol{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13px;color:var(--ink3)}
+.foot a{color:var(--ink2)}
+.sig{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline}
+.sig .wm{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:22px}
+a{color:var(--pink)}
+a:focus-visible{outline:2px solid var(--solar);outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;gap:10px}
+.nav a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--ink2);border:1px solid var(--magenta);border-radius:999px;padding:6px 14px}
+.meter{display:inline-block;width:64px;height:6px;border-radius:3px;background:var(--line);vertical-align:middle;margin-left:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--purple)}
+@media (max-width:640px){.mark{opacity:.35;width:80%}}
+@media (prefers-reduced-motion:no-preference){.mark path{stroke-dasharray:1400;stroke-dashoffset:0;animation:draw 1.4s ease-out both}}
+@keyframes draw{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+</style>
+<div class="bar"></div>
+<main class="wrap">
+<section class="hero">
+  <svg class="mark" viewBox="0 0 800 340" aria-hidden="true"><path d="M 20 310 C 160 290, 260 100, 400 100 S 640 290, 780 310" stroke="#4B2E83" style="animation-delay:0.00s"/><path d="M 20 304 C 160 284, 260 116, 400 116 S 640 284, 780 304" stroke="#7B3FAB" style="animation-delay:0.12s"/><path d="M 20 298 C 160 278, 260 132, 400 132 S 640 278, 780 298" stroke="#C026A0" style="animation-delay:0.24s"/><path d="M 20 292 C 160 272, 260 148, 400 148 S 640 272, 780 292" stroke="#F05A28" style="animation-delay:0.36s"/><path d="M 20 286 C 160 266, 260 164, 400 164 S 640 266, 780 286" stroke="#F78DA7" style="animation-delay:0.48s"/><path d="M 20 280 C 160 260, 260 180, 400 180 S 640 260, 780 280" stroke="#FFCC00" style="animation-delay:0.60s"/></svg>
+  <div class="kicker">Growth Grid · UK grocery · Pilot v0.3</div>
+  <h1>Lidl GB<br><span class="grad">get eligible</span></h1>
+  <p class="thesis">Lidl wins the price argument an agent would run. It just isn&#x27;t in the room when the agent runs it.</p>
+  <nav class="nav"><a href="#grid">The grid</a><a href="#layers">What to do</a><a href="#angles">Creative</a><a href="#measure">Measurement</a></nav>
+</section>
+
+<section class="section"><div class="stats"><div class="stat"><div class="n">8.8%</div><div class="d">GB grocery share, 12 wks to 9 Aug 2026</div></div><div class="stat"><div class="n">+8.5%</div><div class="d">Sales growth YoY; now the #5 grocer</div></div><div class="stat"><div class="n">0</div><div class="d">Online grocery checkouts an agent can use</div></div><div class="stat take"><div class="n">0.51</div><div class="d">Agentic Gate: the number this report turns on</div></div></div></section>
+
+<section class="section" id="grid">
+  <header><div class="kicker">01 · The grid</div><h2>Where the gaps and strengths sit</h2>
+  <p>Heat is the importance-weighted gap between what people need and what Lidl GB delivers in each Moment. Coral bars are gaps to fix. Lilac bars are strengths to lead the creative with.</p></header>
+  <div class="panel"><svg viewBox="0 0 640 280" width="100%" role="img" aria-label="Heat per Moment"><line x1="110.0" y1="8" x2="110.0" y2="254" stroke="#262626" stroke-width="1"/><text x="110.0" y="272" text-anchor="middle">-30</text><line x1="195.7" y1="8" x2="195.7" y2="254" stroke="#262626" stroke-width="1"/><text x="195.7" y="272" text-anchor="middle">-20</text><line x1="281.3" y1="8" x2="281.3" y2="254" stroke="#262626" stroke-width="1"/><text x="281.3" y="272" text-anchor="middle">-10</text><line x1="367.0" y1="8" x2="367.0" y2="254" stroke="#262626" stroke-width="1"/><text x="367.0" y="272" text-anchor="middle">0</text><line x1="452.7" y1="8" x2="452.7" y2="254" stroke="#262626" stroke-width="1"/><text x="452.7" y="272" text-anchor="middle">+10</text><line x1="538.3" y1="8" x2="538.3" y2="254" stroke="#262626" stroke-width="1"/><text x="538.3" y="272" text-anchor="middle">+20</text><line x1="624.0" y1="8" x2="624.0" y2="254" stroke="#262626" stroke-width="1"/><text x="624.0" y="272" text-anchor="middle">+30</text><line x1="409.8" y1="8" x2="409.8" y2="254" stroke="#7A7A7A" stroke-dasharray="3 4"/><line x1="281.3" y1="8" x2="281.3" y2="254" stroke="#7A7A7A" stroke-dasharray="3 4"/><text x="0" y="29" style="text-transform:uppercase;letter-spacing:.15em">replenish</text><rect x="367.0" y="18" width="68.5" height="16" rx="3" fill="#F05A28"/><text x="441.5" y="30" text-anchor="start" style="fill:#FFFFFF">+8.0</text><text x="0" y="69" style="text-transform:uppercase;letter-spacing:.15em">plan</text><rect x="367.0" y="58" width="95.9" height="16" rx="3" fill="#F05A28"/><text x="468.9" y="70" text-anchor="start" style="fill:#FFFFFF">+11.2</text><text x="0" y="109" style="text-transform:uppercase;letter-spacing:.15em">discover</text><rect x="232.5" y="98" width="134.5" height="16" rx="3" fill="#B08AE0"/><text x="226.5" y="110" text-anchor="end" style="fill:#FFFFFF">-15.7</text><text x="0" y="149" style="text-transform:uppercase;letter-spacing:.15em">manage</text><rect x="334.4" y="138" width="32.6" height="16" rx="3" fill="#7A7A7A"/><text x="328.4" y="150" text-anchor="end" style="fill:#FFFFFF">-3.8</text><text x="0" y="189" style="text-transform:uppercase;letter-spacing:.15em">celebrate</text><rect x="367.0" y="178" width="15.4" height="16" rx="3" fill="#7A7A7A"/><text x="388.4" y="190" text-anchor="start" style="fill:#FFFFFF">+1.8</text><text x="0" y="229" style="text-transform:uppercase;letter-spacing:.15em">care</text><rect x="361.9" y="218" width="5.1" height="16" rx="3" fill="#7A7A7A"/><text x="355.9" y="230" text-anchor="end" style="fill:#FFFFFF">-0.6</text></svg></div>
+  <div class="panel scroll"><table>
+<thead><tr><th>Moment</th><th style="text-align:right">Heat</th><th>Role</th><th style="text-align:right">Delegation</th><th>Emphasis split</th><th style="text-align:right">Angles</th></tr></thead>
+<tbody><tr>
+<td><b style="font-weight:500">Replenish</b><small>“We're running low.”</small></td>
+<td class="num">+8.0</td>
+<td><span class="pill fix">fix</span></td>
+<td class="num">0.41<span class="meter"><i style="width:41%"></i></span></td>
+<td><div class="split" title="L1 22.8% · L3 43.3%"><i class="l1" style="width:34%"></i><i class="l3" style="flex:1"></i></div><small>22.8% memory · 43.3% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Plan</b><small>“What are we doing this week?”</small></td>
+<td class="num">+11.2</td>
+<td><span class="pill fix">fix</span></td>
+<td class="num">0.33<span class="meter"><i style="width:33%"></i></span></td>
+<td><div class="split" title="L1 16.0% · L3 22.1%"><i class="l1" style="width:42%"></i><i class="l3" style="flex:1"></i></div><small>16.0% memory · 22.1% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Discover</b><small>“Show me something new.”</small></td>
+<td class="num">-15.7</td>
+<td><span class="pill leverage">leverage</span></td>
+<td class="num">0.23<span class="meter"><i style="width:23%"></i></span></td>
+<td><div class="split" title="L1 9.9% · L3 8.5%"><i class="l1" style="width:54%"></i><i class="l3" style="flex:1"></i></div><small>9.9% memory · 8.5% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Manage</b><small>“This needs handling.”</small></td>
+<td class="num">-3.8</td>
+<td><span class="pill hold">hold</span></td>
+<td class="num">0.26<span class="meter"><i style="width:26%"></i></span></td>
+<td><div class="split" title="L1 15.5% · L3 15.6%"><i class="l1" style="width:50%"></i><i class="l3" style="flex:1"></i></div><small>15.5% memory · 15.6% protocol</small></td>
+<td class="num">0</td>
+</tr><tr>
+<td><b style="font-weight:500">Celebrate</b><small>“This matters.”</small></td>
+<td class="num">+1.8</td>
+<td><span class="pill hold">hold</span></td>
+<td class="num">0.10<span class="meter"><i style="width:10%"></i></span></td>
+<td><div class="split" title="L1 17.8% · L3 5.8%"><i class="l1" style="width:75%"></i><i class="l3" style="flex:1"></i></div><small>17.8% memory · 5.8% protocol</small></td>
+<td class="num">1</td>
+</tr><tr>
+<td><b style="font-weight:500">Care</b><small>“This is my responsibility.”</small></td>
+<td class="num">-0.6</td>
+<td><span class="pill hold">hold</span></td>
+<td class="num">0.08<span class="meter"><i style="width:8%"></i></span></td>
+<td><div class="split" title="L1 18.1% · L3 4.7%"><i class="l1" style="width:79%"></i><i class="l3" style="flex:1"></i></div><small>18.1% memory · 4.7% protocol</small></td>
+<td class="num">1</td>
+</tr></tbody></table>
+<div class="legend" style="margin-top:14px"><span style="--c:var(--magenta)">L1 memory share (people decide)</span><span style="--c:var(--purple)">L3 protocol share (agents decide)</span></div></div>
+  <p class="callout">Emphasis follows the size of each Moment in the category, split by who decides it. The shares describe where memory-building and agent-readiness work should go. They are not budget splits, and reach itself is never cut.</p>
+</section>
+
+<section class="section">
+  <header><div class="kicker">02 · Diagnosis</div><h2>What the grid says</h2></header>
+  <ul class="clean"><li>Lidl's grid is a price machine with a planning hole. It over-delivers on Discover (the Middle of Lidl) and on cost-of-living reassurance, and holds everywhere else.</li><li>The gaps sit in <b>Plan</b> (no lists, baskets or planning help: cognitive offload gap +25) and <b>Replenish</b> (range and availability drive a second shop elsewhere).</li><li>Both gaps sit in the Moments agents will take first. With no online grocery and no machine-readable range, the Agentic Gate is <b>0.51</b>, so agents can plan around Lidl but not with it.</li></ul>
+  <div class="cards">
+<div class="card scroll"><div class="label">Biggest gaps</div><table><thead><tr><th>Intent</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th><th style="text-align:right">Gap</th></tr></thead><tbody><tr><td>Cognitive offload (lists, baskets)<small>COGN-P2 · plan</small></td><td class="num">55</td><td class="num">30</td><td class="num" style="color:var(--coral)">+25</td></tr><tr><td>Supply availability (range in stock)<small>CTXT-P3 · replenish</small></td><td class="num">75</td><td class="num">55</td><td class="num" style="color:var(--coral)">+20</td></tr><tr><td>Time constraints<small>CTXT-P4 · plan</small></td><td class="num">70</td><td class="num">50</td><td class="num" style="color:var(--coral)">+20</td></tr><tr><td>Routine integration<small>CTXT-P2 · replenish</small></td><td class="num">70</td><td class="num">55</td><td class="num" style="color:var(--coral)">+15</td></tr><tr><td>Occasion fit<small>CTXT-P5 · celebrate</small></td><td class="num">60</td><td class="num">55</td><td class="num" style="color:var(--coral)">+5</td></tr></tbody></table></div>
+<div class="card scroll"><div class="label">Biggest strengths</div><table><thead><tr><th>Intent</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th><th style="text-align:right">Gap</th></tr></thead><tbody><tr><td>Excitement &amp; stimulation<small>EMOT-P1 · discover</small></td><td class="num">45</td><td class="num">75</td><td class="num" style="color:var(--lilac)">-30</td></tr><tr><td>Simplification<small>COGN-P1 · plan</small></td><td class="num">65</td><td class="num">75</td><td class="num" style="color:var(--lilac)">-10</td></tr><tr><td>Authenticity<small>COGN-P4 · care</small></td><td class="num">45</td><td class="num">55</td><td class="num" style="color:var(--lilac)">-10</td></tr><tr><td>Anxiety reduction (cost of living)<small>EMOT-P3 · manage</small></td><td class="num">70</td><td class="num">80</td><td class="num" style="color:var(--lilac)">-10</td></tr><tr><td>Understanding (labels, provenance)<small>COGN-P3 · manage</small></td><td class="num">45</td><td class="num">50</td><td class="num" style="color:var(--lilac)">-5</td></tr></tbody></table></div>
+</div>
+  <div class="cards"><div class="card scroll"><div class="label">Agentic Gate · 0.51</div><table><thead><tr><th>Agentic intent (modulator)</th><th style="text-align:right">Importance</th><th style="text-align:right">Delivery</th></tr></thead><tbody><tr><td>Delegation confidence<small>AGNT-P1</small></td><td class="num">40</td><td class="num">15</td></tr><tr><td>Transparency<small>AGNT-P2</small></td><td class="num">50</td><td class="num">35</td></tr><tr><td>Override availability<small>AGNT-P3</small></td><td class="num">45</td><td class="num">30</td></tr><tr><td>System compatibility<small>AGNT-P4</small></td><td class="num">40</td><td class="num">10</td></tr></tbody></table>
+  <p style="font-size:14px">The gate is delivery over importance across these four intents. It scales how much of every Moment agents are modelled to decide.</p></div></div>
+</section>
+
+<section class="section" id="layers">
+  <header><div class="kicker">03 · What to do, layer by layer</div><h2>Reach first, then the rest</h2></header>
+  <div class="cards"><div class="card"><div class="label">L1 · Reach</div><h3>Keep funding broad reach</h3><p>Growth is coming from penetration (+8.5%, overtaking Morrisons). This matches the light-buyer maths. Guard against the upmarket push turning into postcode targeting: Moments shape the creative, never who sees it.</p></div><div class="card"><div class="label">L2 · Transmission</div><h3>Write for the price gatekeepers</h3><p>UK signature: Place-bound Civic + Identity Tribe + Gatekeeper. Store openings are local events. Serve the savvy-shopper and Middle-of-Lidl tribe with haul and creator content. Published price comparisons are the gatekeeper, and Lidl&#x27;s proof is already structured for them.</p></div><div class="card"><div class="label">L3 · Protocol</div><h3>Get eligible: agent-planned, store-fulfilled</h3><p>Publish structured price, range and store-stock feeds so an agent can plan a Lidl shop without an online checkout. Make Lidl Plus lists and coupons machine-readable. Justification (price) is already strong; defaults can live in a Lidl Plus weekly plan.</p></div><div class="card"><div class="label">U · Utility</div><h3>A weekly planner inside Lidl Plus</h3><p>Meal plan → list → coupons → store-stock check. Uses Tier 1–2 data only. It fixes the Plan gap without building e-commerce, which would erode the cost base that pays for the price lead.</p></div></div>
+</section>
+
+<section class="section" id="angles">
+  <header><div class="kicker">04 · Creative signal</div><h2>The Angle library</h2>
+  <p>Moments reach the market through creative, never through audience targeting. Each Angle is a spine of mindset × messaging × proof × context. The platform's own model finds the people in that moment.</p></header>
+  <div class="panel"><div class="angle"><div class="top"><h3>Lidl Price Promise</h3><span class="pill leverage">CROSS</span></div><div class="chips"><span class="chip">Price-conscious/Deal-seeker</span><span class="chip">Price-value</span><span class="chip">Price-comparison callout</span><span class="chip">In-store/aisle</span></div></div><div class="angle"><div class="top"><h3>Big Shop, Smaller Bill</h3><span class="pill hold">replenish</span></div><div class="chips"><span class="chip">Habitual/Routine-repeater</span><span class="chip">Habit-reinforcement</span><span class="chip">Review/rating callout</span><span class="chip">In-store/aisle</span></div></div><div class="angle"><div class="top"><h3>Plan It on Lidl Plus</h3><span class="pill hold">plan</span></div><div class="chips"><span class="chip">Convenience-first/Time-poor</span><span class="chip">Convenience/time-saving</span><span class="chip">Before-after (meal transformation)</span><span class="chip">In-kitchen</span></div></div><div class="angle"><div class="top"><h3>Middle of Lidl</h3><span class="pill hold">discover</span></div><div class="chips"><span class="chip">Adventurous/Recipe-explorer</span><span class="chip">Discovery/new-flavor</span><span class="chip">Review/rating callout</span><span class="chip">In-store/aisle</span></div></div><div class="angle"><div class="top"><h3>Deluxe for Less</h3><span class="pill hold">celebrate</span></div><div class="chips"><span class="chip">Occasion-driven/Host-mode</span><span class="chip">Occasion-specific</span><span class="chip">Chef/creator endorsement</span><span class="chip">Seasonal/holiday</span></div></div><div class="angle"><div class="top"><h3>Fresh from British Farms</h3><span class="pill hold">care</span></div><div class="chips"><span class="chip">Health-conscious/Label-reader</span><span class="chip">Health/functional benefit</span><span class="chip">Sustainability/sourcing certification</span><span class="chip">Family meal table</span></div></div></div>
+  <p class="callout">No white space. Manage has no Angle, which is fine for a hold Moment, but cost-of-living reassurance is Lidl's biggest single over-delivery and could earn a CROSS Angle.</p>
+</section>
+
+<section class="section" id="measure">
+  <header><div class="kicker">05 · Measurement</div><h2>Measure each layer on its own terms</h2></header>
+  <div class="panel scroll"><table><tbody><tr><td class='mono' style='color:var(--ink)'>L1</td><td>Mental availability for weekly-shop and planning entry points; reach against the efficient frontier</td></tr><tr><td class='mono' style='color:var(--ink)'>L2</td><td>Earned haul and creator volume; local reach of store openings</td></tr><tr><td class='mono' style='color:var(--ink)'>L3</td><td>Eligibility rate: share of agent meal-plan queries that surface Lidl</td></tr><tr><td class='mono' style='color:var(--ink)'>Causal</td><td>Geo-holdout test of the planner utility</td></tr></tbody></table></div>
+</section>
+
+<section class="next"><div class="kicker" style="color:var(--solar)">The one thing to do next</div><div class="t">Scope the Lidl Plus planner and a public store-stock feed as one build. It closes the Plan gap and the eligibility gap together.</div>
+<p style="font-size:14px">Compare with the <a href="https://claude.ai/artifact/6hwyRzb1HkEVKsfx6akPPi">Waitrose report</a>, and see the <a href="https://claude.ai/artifact/3dMBGL8wHNrNS7s6eQPY5S">diagnostic report</a> for why the two grids differ.</p></section>
+
+<footer class="foot">
+  <div class="label">Sources and method</div>
+  <p style="font-size:14px">Pilot v0.3, 24 Sep 2026. Market facts are sourced below; shares are Worldpanel figures as reported in the trade press. Intent importance is scored at category level and is identical for both brands. Delivery is analyst judgement anchored to the sources (inferred, medium confidence). Intent IDs are provisional until the canonical 47-intent taxonomy is loaded. Delegation priors are hypotheses to validate.</p>
+  <ol><li><a href="https://www.grocerygazette.co.uk/2026/07/21/lidl-leads-grocery-market-share-growth/">Grocery Gazette — Lidl leads market share growth (Jul 2026)</a></li><li><a href="https://www.thegrocer.co.uk/news/lidl-sails-past-morrisons-to-become-uks-fifth-biggest-supermarket/719385.article">The Grocer — Lidl overtakes Morrisons</a></li><li><a href="https://www.thegrocer.co.uk/news/lidl-plus-app-users-unfazed-by-loyalty-scheme-overhaul/720013.article">The Grocer — Lidl Plus daily users +20%</a></li><li><a href="https://corporate.lidl.co.uk/media-centre/pressreleases/2026/lidl-and-go-roll-out">Lidl GB — Lidl &amp; Go rolls out to 37 stores</a></li><li><a href="https://delivercart.co.uk/blog/lidl-delivery-in-the-uk/">Delivercart — no Lidl GB home grocery delivery (secondary)</a></li></ol>
+  <div class="sig"><span class="wm">jean-paul</span><span class="kicker">Where strategy meets sunrise</span></div>
+  <p style="font-size:12px;color:var(--ink3)">Growth Grid framework and IP: Jean-Paul Edwards. Independent analysis; not affiliated with or endorsed by the brands shown.</p>
+</footer>
+</main>
+<div class="bar"></div>

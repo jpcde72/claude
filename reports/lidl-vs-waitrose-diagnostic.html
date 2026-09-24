@@ -1,0 +1,177 @@
+<title>Lidl vs Waitrose Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;1,400&family=Outfit:wght@300;500;600&family=Space+Mono&display=swap">
+<style>
+:root{
+  --violet:#4B2E83;--purple:#7B3FAB;--magenta:#C026A0;--coral:#F05A28;--pink:#F78DA7;--solar:#FFCC00;
+  --lilac:#B08AE0;--bg:#0A0A0A;--panel:#141414;--panel2:#1B1B1B;--line:#262626;--ink:#FFFFFF;--ink2:#B0B0B0;--ink3:#7A7A7A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"Outfit",Helvetica,Arial,sans-serif;font-weight:300;font-size:16px;line-height:1.6;margin:0}
+.bar{height:6px;background:linear-gradient(90deg,var(--violet),var(--purple),var(--magenta),var(--coral),var(--pink),var(--solar))}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:clamp(16px,4vw,48px);padding-block:40px 64px;display:grid;gap:56px}
+.kicker,.label,th,.mono{font-family:"Space Mono","Courier New",monospace;text-transform:uppercase;letter-spacing:.25em;font-size:11px;color:var(--ink2);font-weight:400}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(44px,8vw,88px)}
+h2{font-size:clamp(28px,4vw,40px)}
+h3{font-family:"Outfit",sans-serif;font-weight:500;font-size:19px;line-height:1.3}
+.grad{font-style:italic;background:linear-gradient(90deg,var(--magenta),var(--coral),var(--solar));-webkit-background-clip:text;background-clip:text;color:transparent}
+p{margin:0;max-width:68ch;color:var(--ink2)}
+p b,li b{color:var(--ink);font-weight:500}
+.hero{display:grid;gap:20px;position:relative}
+.hero .thesis{font-size:clamp(19px,2.4vw,24px);color:var(--ink);max-width:40ch;font-weight:300}
+.mark{position:absolute;right:0;top:-10px;width:min(420px,55%);opacity:.9;pointer-events:none}
+.mark path{fill:none;stroke-width:3;stroke-linecap:round}
+.section{display:grid;gap:24px}
+.section>header{display:grid;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--panel);padding:22px;display:grid;gap:6px;align-content:start}
+.stat .n{font-weight:600;font-size:clamp(34px,5vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.stat.take .n{color:var(--solar)}
+.stat .d{font-size:14px;color:var(--ink2)}
+.panel{background:var(--panel);border-radius:14px;padding:24px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink)}
+td.num{text-align:right}
+td small{display:block;color:var(--ink3);font-size:12px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+.fix{color:var(--coral);border:1px solid var(--coral)}
+.leverage{color:var(--lilac);border:1px solid var(--lilac)}
+.hold{color:var(--ink3);border:1px solid var(--line)}
+.split{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--line);min-width:120px}
+.split i{display:block;height:100%}
+.split .l1{background:var(--magenta)}.split .l3{background:var(--purple)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--ink2)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--panel);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start}
+.card p{font-size:15px}
+ul.clean{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+ul.clean li{color:var(--ink2);max-width:72ch;padding-left:18px;position:relative}
+ul.clean li::before{content:"";position:absolute;left:0;top:.7em;width:8px;height:2px;background:var(--coral)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--panel2);color:var(--ink2);border:1px solid var(--line)}
+.angle{display:grid;gap:8px;padding:16px 0;border-bottom:1px solid var(--line)}
+.angle:last-child{border-bottom:0}
+.angle .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.callout{border-left:2px solid var(--coral);padding:4px 0 4px 18px;color:var(--ink2);max-width:72ch}
+.next{background:linear-gradient(135deg,rgba(75,46,131,.35),rgba(240,90,40,.18));border-radius:14px;padding:28px;display:grid;gap:10px}
+.next .t{font-family:"Fraunces",Georgia,serif;font-size:clamp(22px,3vw,30px);color:var(--ink);line-height:1.25;max-width:40ch}
+svg text{font-family:"Space Mono",monospace;font-size:11px;fill:var(--ink2)}
+.foot{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:28px}
+.foot ol{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13px;color:var(--ink3)}
+.foot a{color:var(--ink2)}
+.sig{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline}
+.sig .wm{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:22px}
+a{color:var(--pink)}
+a:focus-visible{outline:2px solid var(--solar);outline-offset:2px}
+.nav{display:flex;flex-wrap:wrap;gap:10px}
+.nav a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--ink2);border:1px solid var(--magenta);border-radius:999px;padding:6px 14px}
+.meter{display:inline-block;width:64px;height:6px;border-radius:3px;background:var(--line);vertical-align:middle;margin-left:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--purple)}
+@media (max-width:640px){.mark{opacity:.35;width:80%}}
+@media (prefers-reduced-motion:no-preference){.mark path{stroke-dasharray:1400;stroke-dashoffset:0;animation:draw 1.4s ease-out both}}
+@keyframes draw{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+</style>
+<div class="bar"></div>
+<main class="wrap">
+<section class="hero">
+  <svg class="mark" viewBox="0 0 800 340" aria-hidden="true"><path d="M 20 310 C 160 290, 260 100, 400 100 S 640 290, 780 310" stroke="#4B2E83" style="animation-delay:0.00s"/><path d="M 20 304 C 160 284, 260 116, 400 116 S 640 284, 780 304" stroke="#7B3FAB" style="animation-delay:0.12s"/><path d="M 20 298 C 160 278, 260 132, 400 132 S 640 278, 780 298" stroke="#C026A0" style="animation-delay:0.24s"/><path d="M 20 292 C 160 272, 260 148, 400 148 S 640 272, 780 292" stroke="#F05A28" style="animation-delay:0.36s"/><path d="M 20 286 C 160 266, 260 164, 400 164 S 640 266, 780 286" stroke="#F78DA7" style="animation-delay:0.48s"/><path d="M 20 280 C 160 260, 260 180, 400 180 S 640 260, 780 280" stroke="#FFCC00" style="animation-delay:0.60s"/></svg>
+  <div class="kicker">Growth Grid · Diagnostic · Lidl GB vs Waitrose</div>
+  <h1>Same category,<br><span class="grad">opposite</span> failure modes</h1>
+  <p class="thesis">Both brands' hottest Moment is one agents will take first. Lidl lacks eligibility; Waitrose lacks justification. This page shows why the model produced that, and which settings we can tune.</p>
+  <nav class="nav"><a href="#why">Why they differ</a><a href="#gate">The gate</a><a href="#fragile">Fragile calls</a><a href="#levers">Levers</a><a href="https://claude.ai/artifact/5c9QE3etorQszuFhBtPsAa">Lidl GB report</a><a href="https://claude.ai/artifact/6hwyRzb1HkEVKsfx6akPPi">Waitrose report</a></nav>
+</section>
+
+<section class="section">
+  <div class="stats">
+    <div class="stat"><div class="n">0</div><div class="d">Importance scores that differ between the brands, so every difference comes from delivery</div></div>
+    <div class="stat"><div class="n">0.51 / 0.94</div><div class="d">Agentic Gate, Lidl / Waitrose</div></div>
+    <div class="stat take"><div class="n">Eligible vs justified</div><div class="d">The two different L3 jobs the same grid prescribes</div></div>
+  </div>
+</section>
+
+<section class="section" id="why">
+  <header><div class="kicker">01 · Why the outputs differ</div><h2>Heat, side by side</h2>
+  <p>Coral dots are Lidl, purple dots are Waitrose. Dashed lines mark the fix (+5) and leverage (−10) thresholds. The table names the single intent that contributes most to the gap between the two brands in each Moment.</p></header>
+  <div class="panel"><svg viewBox="0 0 640 316" width="100%" role="img" aria-label="Lidl vs Waitrose heat per Moment"><line x1="110.0" y1="8" x2="110.0" y2="290" stroke="#262626"/><text x="110.0" y="308" text-anchor="middle">-30</text><line x1="195.0" y1="8" x2="195.0" y2="290" stroke="#262626"/><text x="195.0" y="308" text-anchor="middle">-20</text><line x1="280.0" y1="8" x2="280.0" y2="290" stroke="#262626"/><text x="280.0" y="308" text-anchor="middle">-10</text><line x1="365.0" y1="8" x2="365.0" y2="290" stroke="#262626"/><text x="365.0" y="308" text-anchor="middle">0</text><line x1="450.0" y1="8" x2="450.0" y2="290" stroke="#262626"/><text x="450.0" y="308" text-anchor="middle">+10</text><line x1="535.0" y1="8" x2="535.0" y2="290" stroke="#262626"/><text x="535.0" y="308" text-anchor="middle">+20</text><line x1="620.0" y1="8" x2="620.0" y2="290" stroke="#262626"/><text x="620.0" y="308" text-anchor="middle">+30</text><line x1="407.5" y1="8" x2="407.5" y2="290" stroke="#7A7A7A" stroke-dasharray="3 4"/><line x1="280.0" y1="8" x2="280.0" y2="290" stroke="#7A7A7A" stroke-dasharray="3 4"/><text x="0" y="26" style="text-transform:uppercase;letter-spacing:.15em">replenish</text><line x1="433.0" y1="22" x2="489.1" y2="22" stroke="#7A7A7A" stroke-width="2"/><circle cx="433.0" cy="22" r="7" fill="#F05A28"/><circle cx="489.1" cy="22" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/><text x="0" y="72" style="text-transform:uppercase;letter-spacing:.15em">plan</text><line x1="460.2" y1="68" x2="382.0" y2="68" stroke="#7A7A7A" stroke-width="2"/><circle cx="460.2" cy="68" r="7" fill="#F05A28"/><circle cx="382.0" cy="68" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/><text x="0" y="118" style="text-transform:uppercase;letter-spacing:.15em">discover</text><line x1="231.6" y1="114" x2="189.1" y2="114" stroke="#7A7A7A" stroke-width="2"/><circle cx="231.6" cy="114" r="7" fill="#F05A28"/><circle cx="189.1" cy="114" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/><text x="0" y="164" style="text-transform:uppercase;letter-spacing:.15em">manage</text><line x1="332.7" y1="160" x2="387.1" y2="160" stroke="#7A7A7A" stroke-width="2"/><circle cx="332.7" cy="160" r="7" fill="#F05A28"/><circle cx="387.1" cy="160" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/><text x="0" y="210" style="text-transform:uppercase;letter-spacing:.15em">celebrate</text><line x1="380.3" y1="206" x2="150.8" y2="206" stroke="#7A7A7A" stroke-width="2"/><circle cx="380.3" cy="206" r="7" fill="#F05A28"/><circle cx="150.8" cy="206" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/><text x="0" y="256" style="text-transform:uppercase;letter-spacing:.15em">care</text><line x1="359.9" y1="252" x2="205.2" y2="252" stroke="#7A7A7A" stroke-width="2"/><circle cx="359.9" cy="252" r="7" fill="#F05A28"/><circle cx="205.2" cy="252" r="7" fill="#7B3FAB" stroke="#B08AE0" stroke-width="2"/></svg>
+  <div class="legend" style="margin-top:10px"><span style="--c:var(--coral)">Lidl GB</span><span style="--c:var(--purple)">Waitrose</span></div></div>
+  <div class="panel scroll"><table><thead><tr><th>Moment</th><th style="text-align:right">Lidl</th><th style="text-align:right">Waitrose</th><th style="text-align:right">Δ (W − L)</th><th>Biggest driver</th></tr></thead><tbody><tr><td><b style="font-weight:500">Replenish</b></td>
+<td class="num">+8.0 <span class="pill fix">fix</span></td>
+<td class="num">+14.6 <span class="pill fix">fix</span></td>
+<td class="num">+6.6</td>
+<td>Budget fit<small>contributes +12.9 of the difference</small></td></tr><tr><td><b style="font-weight:500">Plan</b></td>
+<td class="num">+11.2 <span class="pill fix">fix</span></td>
+<td class="num">+2.0 <span class="pill hold">hold</span></td>
+<td class="num">-9.2</td>
+<td>Cognitive offload (lists, baskets)<small>contributes -8.7 of the difference</small></td></tr><tr><td><b style="font-weight:500">Discover</b></td>
+<td class="num">-15.7 <span class="pill leverage">leverage</span></td>
+<td class="num">-20.7 <span class="pill leverage">leverage</span></td>
+<td class="num">-5.0</td>
+<td>Pleasure (taste)<small>contributes -11.4 of the difference</small></td></tr><tr><td><b style="font-weight:500">Manage</b></td>
+<td class="num">-3.8 <span class="pill hold">hold</span></td>
+<td class="num">+2.6 <span class="pill hold">hold</span></td>
+<td class="num">+6.4</td>
+<td>Anxiety reduction (cost of living)<small>contributes +18.5 of the difference</small></td></tr><tr><td><b style="font-weight:500">Celebrate</b></td>
+<td class="num">+1.8 <span class="pill hold">hold</span></td>
+<td class="num">-25.2 <span class="pill leverage">leverage</span></td>
+<td class="num">-27.0</td>
+<td>Occasion fit<small>contributes -10.9 of the difference</small></td></tr><tr><td><b style="font-weight:500">Care</b></td>
+<td class="num">-0.6 <span class="pill hold">hold</span></td>
+<td class="num">-18.8 <span class="pill leverage">leverage</span></td>
+<td class="num">-18.2</td>
+<td>Values alignment (sourcing, welfare)<small>contributes -10.6 of the difference</small></td></tr></tbody></table></div>
+  <ul class="clean">
+    <li><b>Replenish</b> is hot for both brands, for different reasons. Waitrose's Budget fit gap (+45) outweighs Lidl's range and availability gaps.</li>
+    <li><b>Plan</b> splits them: Lidl has no planning or basket help (cognitive offload 30 vs 60), and in-store-only shopping makes time pressure worse.</li>
+    <li><b>Celebrate and Care</b> are where Waitrose pulls away: self-reward, occasion fit, provenance and authenticity all over-deliver by 20–35 points.</li>
+  </ul>
+</section>
+
+<section class="section" id="gate">
+  <header><div class="kicker">02 · The Agentic Gate</div><h2>Why agents see the brands differently</h2>
+  <p>The gate is delivery over importance across the agentic intents. It multiplies each Moment's delegation prior, so it decides how much of the grid agents are modelled to decide.</p></header>
+  <div class="cards">
+    <div class="card scroll"><table><thead><tr><th>Agentic intent</th><th style="text-align:right">Imp.</th><th style="text-align:right">Lidl</th><th style="text-align:right">Waitrose</th></tr></thead><tbody><tr><td>Delegation confidence</td><td class='num'>40</td><td class='num'>15</td><td class='num'>35</td></tr><tr><td>Transparency</td><td class='num'>50</td><td class='num'>35</td><td class='num'>50</td></tr><tr><td>Override availability</td><td class='num'>45</td><td class='num'>30</td><td class='num'>50</td></tr><tr><td>System compatibility</td><td class='num'>40</td><td class='num'>10</td><td class='num'>30</td></tr></tbody>
+    <tfoot><tr><td class="mono">Gate</td><td></td><td class="num">0.51</td><td class="num">0.94</td></tr></tfoot></table></div>
+    <div class="card"><div class="label">What follows</div>
+    <p>System compatibility (10 vs 30) and delegation confidence (15 vs 35) drive most of the difference. Lidl has no online grocery for an agent to act on; Waitrose runs ~160k deliveries a week.</p>
+    <p>Consequence: Waitrose's Replenish is modelled as 75% agent-decided vs Lidl's 41%. Waitrose's price gap is more exposed to machine comparison than Lidl's planning gap is.</p></div>
+  </div>
+</section>
+
+<section class="section" id="fragile">
+  <header><div class="kicker">03 · How fragile each call is</div><h2>The smallest change that flips a role</h2>
+  <p>For each Moment, the single delivery score that would move it across the nearest threshold with the smallest change. A shift of 15 points or less is flagged as fragile; those scores need evidence first.</p></header>
+  <div class="panel scroll"><table><thead><tr><th>Brand</th><th>Moment</th><th>Role</th><th>Easiest score to move</th><th style="text-align:right">Delivery now → flip</th><th style="text-align:right">Change</th></tr></thead><tbody><tr><td>Lidl GB</td><td>Replenish</td><td><span class='pill fix'>fix</span></td><td>Budget fit</td><td class='num'>88 → 98</td><td class='num' style='color:var(--coral)'>+10 · fragile</td></tr><tr><td>Lidl GB</td><td>Plan</td><td><span class='pill fix'>fix</span></td><td>Time constraints</td><td class='num'>50 → 67</td><td class='num' style='color:var(--ink2)'>+17</td></tr><tr><td>Lidl GB</td><td>Discover</td><td><span class='pill leverage'>leverage</span></td><td>Pleasure (taste)</td><td class='num'>65 → 55</td><td class='num' style='color:var(--coral)'>-10 · fragile</td></tr><tr><td>Lidl GB</td><td>Manage</td><td><span class='pill hold'>hold</span></td><td>Anxiety reduction (cost of living)</td><td class='num'>80 → 95</td><td class='num' style='color:var(--coral)'>+15 · fragile</td></tr><tr><td>Lidl GB</td><td>Celebrate</td><td><span class='pill hold'>hold</span></td><td>Occasion fit</td><td class='num'>55 → 46</td><td class='num' style='color:var(--coral)'>-9 · fragile</td></tr><tr><td>Lidl GB</td><td>Care</td><td><span class='pill hold'>hold</span></td><td>Caring for others (feeding the family)</td><td class='num'>65 → 52</td><td class='num' style='color:var(--coral)'>-13 · fragile</td></tr><tr><td>Waitrose</td><td>Replenish</td><td><span class='pill fix'>fix</span></td><td>Budget fit</td><td class='num'>45 → 77</td><td class='num' style='color:var(--ink2)'>+32</td></tr><tr><td>Waitrose</td><td>Plan</td><td><span class='pill hold'>hold</span></td><td>Time constraints</td><td class='num'>70 → 62</td><td class='num' style='color:var(--coral)'>-8 · fragile</td></tr><tr><td>Waitrose</td><td>Discover</td><td><span class='pill leverage'>leverage</span></td><td>Pleasure (taste)</td><td class='num'>85 → 66</td><td class='num' style='color:var(--ink2)'>-19</td></tr><tr><td>Waitrose</td><td>Manage</td><td><span class='pill hold'>hold</span></td><td>Anxiety reduction (cost of living)</td><td class='num'>35 → 29</td><td class='num' style='color:var(--coral)'>-6 · fragile</td></tr><tr><td>Waitrose</td><td>Celebrate</td><td><span class='pill leverage'>leverage</span></td><td>Occasion fit</td><td class='num'>85 → 43</td><td class='num' style='color:var(--ink2)'>-42</td></tr><tr><td>Waitrose</td><td>Care</td><td><span class='pill leverage'>leverage</span></td><td>Caring for others (feeding the family)</td><td class='num'>70 → 49</td><td class='num' style='color:var(--ink2)'>-21</td></tr></tbody></table></div>
+  <p class="callout">The headline rests on Waitrose Replenish and Lidl Plan. Waitrose's Budget fit would have to rise by about 32 points to lose its fix role, so that call is robust. Lidl's Plan fix needs a 17-point move, so it is moderately robust. Lidl's Replenish fix is the weakest call on the page: Budget fit rising from 88 to 98 would drop it to hold.</p>
+</section>
+
+<section class="section" id="levers">
+  <header><div class="kicker">04 · Levers we can tune together</div><h2>Model settings, and what each one changes</h2></header>
+  <div class="cards"><div class="card"><div class="label">Heat thresholds</div><h3>fix ≥ +5, leverage ≤ -10</h3><p>Set which Moments are called gaps or strengths. Lidl Replenish sits only 3 points above the fix line.</p></div><div class="card"><div class="label">Delegation priors</div><h3>Replenish 0.80 → Care 0.15</h3><p>Untested hypotheses. They set the shape of every L1/L3 split. Replace them with observed agent-referred share per Moment.</p></div><div class="card"><div class="label">Uniform Agentic Gate</div><h3>one number per brand</h3><p>Scales every Moment equally, so L3 shares come out identical for both brands. A per-Moment gate would let agent readiness differ by Moment.</p></div><div class="card"><div class="label">L1 floor</div><h3>0.15</h3><p>Minimum memory emphasis for a fully delegated Moment. Raise it if humans keep setting agent rules for longer.</p></div><div class="card"><div class="label">Heat formula</div><h3>importance-weighted mean gap</h3><p>A provisional stand-in for your canonical crosswalk. Replace it once the crosswalk file is loaded.</p></div><div class="card"><div class="label">Delivery scores</div><h3>analyst judgement</h3><p>The largest source of error. Run the evidence analyser on the fragile scores first.</p></div></div>
+</section>
+
+<section class="section">
+  <header><div class="kicker">05 · What the pilot changed in the framework</div><h2>Three lessons, already applied</h2></header>
+  <ul class="clean">
+    <li><b>Formula fix (v0.2 → v0.3).</b> Weighting memory emphasis by gap starved Waitrose's strengths to about 1.6%, which breaks the rule that memory is built across every entry point. Emphasis now follows each Moment's size in the category; heat only sets the role.</li>
+    <li><b>Vocabulary gap.</b> The creative-signal Messaging pillar has no value for provenance or standards, so Waitrose's biggest asset could not be expressed. The spine check caught it as a clash. Logged as a candidate pillar revision.</li>
+    <li><b>Provisional taxonomy.</b> Intent IDs carry a -P suffix until the canonical 47-intent taxonomy and crosswalk are loaded.</li>
+  </ul>
+</section>
+
+<section class="next"><div class="kicker" style="color:var(--solar)">The one thing to do next</div>
+<div class="t">Evidence the fragile scores first (Lidl's Budget fit and taste, Waitrose's cost-of-living and time scores, and the four agentic intents), then re-run both grids.</div></section>
+
+<footer class="foot">
+  <div class="label">Sources and method</div>
+  <p style="font-size:14px">Pilot v0.3, 24 Sep 2026. Market facts are sourced below; shares are Worldpanel figures as reported in the trade press. Intent importance is scored at category level and is identical for both brands. Delivery is analyst judgement anchored to the sources (inferred, medium confidence). Intent IDs are provisional until the canonical 47-intent taxonomy is loaded. Delegation priors are hypotheses to validate.</p>
+  <ol><li><a href="https://www.grocerygazette.co.uk/2026/07/21/lidl-leads-grocery-market-share-growth/">Grocery Gazette — Lidl leads market share growth (Jul 2026)</a></li><li><a href="https://www.thegrocer.co.uk/news/lidl-sails-past-morrisons-to-become-uks-fifth-biggest-supermarket/719385.article">The Grocer — Lidl overtakes Morrisons</a></li><li><a href="https://www.retailgazette.co.uk/blog/2026/03/waitrose-ai-satalia-optimisation/">Retail Gazette — Waitrose AI route optimisation (Mar 2026)</a></li><li><a href="https://www.forbes.com/sites/bernardmarr/2026/08/12/tescos-ai-agents-could-soon-do-your-shopping-for-you/">Forbes — Tesco AI agents (Aug 2026)</a></li><li><a href="https://www.retail-week.com/technology/chatgpt-agent-mode-on-trial-how-sainsburys-wickes-and-more-handle-ai-as-a-customer/7049409.article">Retail Week — ChatGPT agent mode vs retailers</a></li></ol>
+  <div class="sig"><span class="wm">jean-paul</span><span class="kicker">Where strategy meets sunrise</span></div>
+  <p style="font-size:12px;color:var(--ink3)">Growth Grid framework and IP: Jean-Paul Edwards. Independent analysis; not affiliated with or endorsed by the brands shown.</p>
+</footer>
+</main>
+<div class="bar"></div>
