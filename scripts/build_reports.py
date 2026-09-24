@@ -246,7 +246,7 @@ def footer(sources, note):
   <div class="label">Sources and method</div>
   <p style="font-size:14px">{note}</p>
   <ol>{items}</ol>
-  <div class="sig"><span class="wm">jean-paul</span><span class="kicker">Where strategy meets sunrise</span></div>
+  <div class="sig"><span class="wm">jean-paul</span></div>
   <p style="font-size:12px;color:var(--ink3)">Growth Grid framework and IP: Jean-Paul Edwards. Independent analysis; not affiliated with or endorsed by the brands shown.</p>
 </footer>"""
 
