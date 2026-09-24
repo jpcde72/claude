@@ -184,3 +184,10 @@
     border-radius: 0.5rem;
     margin-bottom: 1rem;
 }
+
+/* Growth Grid */
+.grid-table td, .grid-table th { white-space: nowrap; }
+.heat-pos { color: #b45309; font-weight: 600; }
+.heat-neg { color: #15803d; }
+tr.white-space td { background: #fff7ed; }
+.notice-bad { background: #fee2e2; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; }

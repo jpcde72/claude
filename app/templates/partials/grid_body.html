@@ -1,0 +1,150 @@
+{% set s = summary %}
+<article>
+    <header>
+        <strong>The grid</strong>
+        <p><small>
+            Moments shape the creative and the build, never who the ads reach. L1 reach is funded first, to the efficient frontier.
+            Shares below split <em>creative/CEP emphasis</em> (L1) and <em>protocol build effort</em> (L3), not budget.
+        </small></p>
+    </header>
+    <div class="overflow-auto">
+    <table class="grid-table">
+        <thead>
+            <tr>
+                <th>Moment</th><th>Heat</th><th>Intents</th>
+                <th>Delegation prior</th><th>Delegation index</th>
+                <th>L1 creative %</th><th>L3 protocol %</th><th>Angles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in s.rows %}
+            <tr{% if r.white_space %} class="white-space"{% endif %}>
+                <td><strong>{{ r.moment.value | capitalize }}</strong><br><small>&ldquo;{{ r.question }}&rdquo;</small></td>
+                <td class="{% if r.heat > 0 %}heat-pos{% elif r.heat < 0 %}heat-neg{% endif %}">{{ r.heat }}</td>
+                <td>{{ r.intent_count }}</td>
+                <td>{{ r.delegation_prior }}</td>
+                <td>{{ r.delegation_index }}</td>
+                <td>{{ r.l1_share }}</td>
+                <td>{{ r.l3_share }}</td>
+                <td>{{ r.angle_count }}{% if r.white_space %} <span class="status-badge status-failed">white space</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <footer>
+        <small>
+            Agentic gate:
+            {% if s.agentic_gate is none %}<em>not scored</em> (add AGNT intents with no Moment to gate delegation){% else %}<strong>{{ s.agentic_gate }}</strong>{% endif %}
+            &middot; Heat = importance-weighted mean gap (provisional until the canonical crosswalk is added).
+        </small>
+    </footer>
+</article>
+
+<details>
+    <summary role="button" class="outline secondary">Delegation priors (hypotheses)</summary>
+    <form hx-put="/grids/{{ grid.id }}/priors" hx-target="#grid-body" hx-swap="innerHTML">
+        <div class="grid">
+            {% for r in s.rows %}
+            <label>{{ r.moment.value | capitalize }}
+                <input type="number" name="prior_{{ r.moment.value }}" value="{{ r.delegation_prior }}" min="0" max="1" step="0.05">
+            </label>
+            {% endfor %}
+        </div>
+        <button type="submit">Update priors</button>
+    </form>
+</details>
+
+<article>
+    <header><strong>Intent scores</strong> <small>(47-intent taxonomy &middot; Importance / Delivery 1&ndash;100)</small></header>
+    {% if grid.intent_scores %}
+    <div class="overflow-auto">
+    <table>
+        <thead><tr><th>ID</th><th>Intent</th><th>Domain</th><th>Moment</th><th>Imp.</th><th>Del.</th><th>Gap</th><th></th></tr></thead>
+        <tbody>
+        {% for i in grid.intent_scores %}
+            <tr>
+                <td><code>{{ i.taxonomy_id }}</code></td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.domain.value }}</td>
+                <td>{% if i.moment %}{{ i.moment.value }}{% else %}<em>modulator</em>{% endif %}</td>
+                <td>{{ i.importance }}</td>
+                <td>{{ i.delivery }}</td>
+                <td class="{% if i.gap > 20 %}heat-pos{% elif i.gap < -10 %}heat-neg{% endif %}">{{ i.gap }}</td>
+                <td><a href="#" hx-delete="/grid-intents/{{ i.id }}" hx-target="#grid-body" hx-swap="innerHTML">remove</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <p><small>No intents scored yet.</small></p>
+    {% endif %}
+    <form hx-post="/grids/{{ grid.id }}/intents" hx-target="#grid-body" hx-swap="innerHTML">
+        <div class="grid">
+            <input type="text" name="taxonomy_id" placeholder="ID (e.g. FUNC-01)" required>
+            <input type="text" name="name" placeholder="Intent name" required>
+            <select name="domain" required>
+                {% for d in domains %}<option value="{{ d.value }}">{{ d.value }}</option>{% endfor %}
+            </select>
+            <select name="moment">
+                <option value="">Modulator (no Moment)</option>
+                {% for m in moments %}<option value="{{ m.value }}">{{ m.value | capitalize }}</option>{% endfor %}
+            </select>
+            <input type="number" name="importance" placeholder="Imp." min="1" max="100" required>
+            <input type="number" name="delivery" placeholder="Del." min="1" max="100" required>
+        </div>
+        <button type="submit">Add intent</button>
+    </form>
+</article>
+
+<article>
+    <header>
+        <strong>Creative Angles</strong>
+        <small>(creative signal &middot; the Moment reaches the market through the creative, never through an audience)</small>
+    </header>
+    {% if s.spine_clashes %}
+    <p class="notice-bad">
+        <strong>Spine clash:</strong>
+        {% for a, b in s.spine_clashes %}{{ a }} &harr; {{ b }}{% if not loop.last %}; {% endif %}{% endfor %}.
+        Same mindset &times; messaging = a reskin. Sharpen, never waive.
+    </p>
+    {% endif %}
+    {% if grid.angles %}
+    <div class="overflow-auto">
+    <table>
+        <thead><tr><th>Angle</th><th>Moment</th><th>Mindset</th><th>Messaging</th><th>Proof</th><th>Context</th><th></th></tr></thead>
+        <tbody>
+        {% for a in grid.angles %}
+            <tr>
+                <td>{{ a.name }}</td>
+                <td>{% if a.moment %}{{ a.moment.value }}{% else %}<strong>CROSS</strong>{% endif %}</td>
+                <td>{{ a.mindset }}</td>
+                <td>{{ a.messaging }}</td>
+                <td>{{ a.proof or "" }}</td>
+                <td>{{ a.context or "" }}</td>
+                <td><a href="#" hx-delete="/angles/{{ a.id }}" hx-target="#grid-body" hx-swap="innerHTML">remove</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p><small>{{ grid.angles | length }} angle(s), {{ s.cross_angle_count }} CROSS. Library floor is 12&ndash;20 orthogonal Angles.</small></p>
+    {% else %}
+    <p><small>No angles yet.</small></p>
+    {% endif %}
+    <form hx-post="/grids/{{ grid.id }}/angles" hx-target="#grid-body" hx-swap="innerHTML">
+        <div class="grid">
+            <input type="text" name="name" placeholder="Angle name" required>
+            <select name="moment">
+                <option value="">CROSS (all Moments)</option>
+                {% for m in moments %}<option value="{{ m.value }}">{{ m.value | capitalize }}</option>{% endfor %}
+            </select>
+            <input type="text" name="mindset" placeholder="Mindset" required>
+            <input type="text" name="messaging" placeholder="Messaging" required>
+            <input type="text" name="proof" placeholder="Proof">
+            <input type="text" name="context" placeholder="Context">
+        </div>
+        <button type="submit">Add angle</button>
+    </form>
+</article>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ grid.brand }} {{ grid.market }} - Growth Grid{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ul>
+        <li><a href="/grids">Growth Grids</a></li>
+        <li>{{ grid.brand }} &middot; {{ grid.market }}</li>
+    </ul>
+</nav>
+
+<hgroup>
+    <h2>{{ grid.brand }} &middot; {{ grid.market }}</h2>
+    <p>{{ grid.category }}{% if grid.notes %} &mdash; {{ grid.notes }}{% endif %}</p>
+</hgroup>
+
+<div id="grid-body">
+    {% include "partials/grid_body.html" %}
+</div>
+
+<div class="intent-actions" style="margin-top: 1rem;">
+    <a role="button" class="outline" href="/grids/{{ grid.id }}/export.json">Export JSON</a>
+    <button class="outline secondary" hx-delete="/grids/{{ grid.id }}"
+            hx-confirm="Delete this grid and all its scores and angles?"
+            hx-target="body" hx-push-url="/grids">Delete Grid</button>
+</div>
+{% endblock %}

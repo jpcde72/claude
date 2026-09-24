@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -98,3 +98,106 @@ class Task(Base):
         secondaryjoin=id == task_dependencies.c.depends_on_id,
         backref="dependents",
     )
+
+
+# --- Growth Grid ---------------------------------------------------------
+# Moments are need states read as category entry points, not audiences.
+# See frameworks/growth-grid.md.
+
+
+class Moment(str, enum.Enum):
+    REPLENISH = "replenish"
+    PLAN = "plan"
+    DISCOVER = "discover"
+    MANAGE = "manage"
+    CELEBRATE = "celebrate"
+    CARE = "care"
+
+
+class IntentDomain(str, enum.Enum):
+    FUNC = "FUNC"
+    EMOT = "EMOT"
+    SOCL = "SOCL"
+    CTXT = "CTXT"
+    COGN = "COGN"
+    AGNT = "AGNT"
+
+
+class Grid(Base):
+    __tablename__ = "grids"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brand: Mapped[str] = mapped_column(String(255))
+    market: Mapped[str] = mapped_column(String(100))
+    category: Mapped[str] = mapped_column(String(255))
+    notes: Mapped[str | None] = mapped_column(Text, default=None)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    moment_settings: Mapped[list["MomentSetting"]] = relationship(
+        back_populates="grid", cascade="all, delete-orphan"
+    )
+    intent_scores: Mapped[list["IntentScore"]] = relationship(
+        back_populates="grid", cascade="all, delete-orphan", order_by="IntentScore.taxonomy_id"
+    )
+    angles: Mapped[list["Angle"]] = relationship(
+        back_populates="grid", cascade="all, delete-orphan", order_by="Angle.id"
+    )
+
+
+class MomentSetting(Base):
+    """Per-grid delegation prior for a Moment (hypothesis, editable)."""
+
+    __tablename__ = "moment_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    grid_id: Mapped[int] = mapped_column(ForeignKey("grids.id", ondelete="CASCADE"))
+    moment: Mapped[Moment] = mapped_column(Enum(Moment))
+    delegation_prior: Mapped[float] = mapped_column(Float)
+
+    grid: Mapped["Grid"] = relationship(back_populates="moment_settings")
+
+
+class IntentScore(Base):
+    """One scored intent from the 47-intent taxonomy (or a CUSTOM- flex)."""
+
+    __tablename__ = "intent_scores"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    grid_id: Mapped[int] = mapped_column(ForeignKey("grids.id", ondelete="CASCADE"))
+    taxonomy_id: Mapped[str] = mapped_column(String(32))
+    name: Mapped[str] = mapped_column(String(255))
+    domain: Mapped[IntentDomain] = mapped_column(Enum(IntentDomain))
+    # None = cross-state modulator (most AGNT intents)
+    moment: Mapped[Moment | None] = mapped_column(Enum(Moment), default=None)
+    importance: Mapped[int] = mapped_column(Integer)
+    delivery: Mapped[int] = mapped_column(Integer)
+
+    grid: Mapped["Grid"] = relationship(back_populates="intent_scores")
+
+    @property
+    def gap(self) -> int:
+        return self.importance - self.delivery
+
+    @property
+    def is_modulator(self) -> bool:
+        return self.moment is None
+
+
+class Angle(Base):
+    """A creative-signal Angle. Moments reach the market through creative, never audience."""
+
+    __tablename__ = "angles"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    grid_id: Mapped[int] = mapped_column(ForeignKey("grids.id", ondelete="CASCADE"))
+    moment: Mapped[Moment | None] = mapped_column(Enum(Moment), default=None)  # None = CROSS
+    name: Mapped[str] = mapped_column(String(255))
+    mindset: Mapped[str] = mapped_column(String(100))
+    messaging: Mapped[str] = mapped_column(String(100))
+    proof: Mapped[str | None] = mapped_column(String(100), default=None)
+    context: Mapped[str | None] = mapped_column(String(100), default=None)
+
+    grid: Mapped["Grid"] = relationship(back_populates="angles")

@@ -1,0 +1,18 @@
+{% if grids %}
+<div class="grid-list">
+    {% for g in grids %}
+    <article class="intent-card">
+        <header>
+            <a href="/grids/{{ g.id }}"><strong>{{ g.brand }}</strong></a>
+            <small>{{ g.market }}</small>
+        </header>
+        <p>{{ g.category }}</p>
+        <footer>
+            <small>{{ g.intent_scores | length }} intent(s) &middot; {{ g.angles | length }} angle(s)</small>
+        </footer>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p>No grids yet. Create one for a brand &times; market pilot.</p>
+{% endif %}
