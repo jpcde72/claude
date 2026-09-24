@@ -1,0 +1,252 @@
+{
+  "meta": {
+    "brand": "Waitrose",
+    "market": "UK",
+    "category": "Grocery",
+    "notes": "Stores plus online grocery (~160k home deliveries/week); Waitrose app with AI recommendations. Intent IDs are PROVISIONAL (P-suffix) pending the canonical 47-intent taxonomy.md; names follow the consumer-intent-modeler domain descriptions. Importance is category-level (UK grocery 2026) and identical across pilots; delivery is analyst judgement (inferred) anchored to the sources in pilots/uk-grocery-lidl-vs-waitrose.md."
+  },
+  "intents": [
+    {
+      "taxonomy_id": "CTXT-P1",
+      "name": "Budget fit",
+      "domain": "CTXT",
+      "moment": "replenish",
+      "importance": 90,
+      "delivery": 45
+    },
+    {
+      "taxonomy_id": "CTXT-P2",
+      "name": "Routine integration",
+      "domain": "CTXT",
+      "moment": "replenish",
+      "importance": 70,
+      "delivery": 70
+    },
+    {
+      "taxonomy_id": "CTXT-P3",
+      "name": "Supply availability (range in stock)",
+      "domain": "CTXT",
+      "moment": "replenish",
+      "importance": 75,
+      "delivery": 75
+    },
+    {
+      "taxonomy_id": "FUNC-P1",
+      "name": "Efficiency (quick shop)",
+      "domain": "FUNC",
+      "moment": "replenish",
+      "importance": 65,
+      "delivery": 60
+    },
+    {
+      "taxonomy_id": "CTXT-P4",
+      "name": "Time constraints",
+      "domain": "CTXT",
+      "moment": "plan",
+      "importance": 70,
+      "delivery": 70
+    },
+    {
+      "taxonomy_id": "COGN-P1",
+      "name": "Simplification",
+      "domain": "COGN",
+      "moment": "plan",
+      "importance": 65,
+      "delivery": 55
+    },
+    {
+      "taxonomy_id": "COGN-P2",
+      "name": "Cognitive offload (lists, baskets)",
+      "domain": "COGN",
+      "moment": "plan",
+      "importance": 55,
+      "delivery": 60
+    },
+    {
+      "taxonomy_id": "EMOT-P1",
+      "name": "Excitement & stimulation",
+      "domain": "EMOT",
+      "moment": "discover",
+      "importance": 45,
+      "delivery": 60
+    },
+    {
+      "taxonomy_id": "EMOT-P2",
+      "name": "Pleasure (taste)",
+      "domain": "EMOT",
+      "moment": "discover",
+      "importance": 60,
+      "delivery": 85
+    },
+    {
+      "taxonomy_id": "FUNC-P2",
+      "name": "Risk mitigation (dietary, allergens)",
+      "domain": "FUNC",
+      "moment": "manage",
+      "importance": 55,
+      "delivery": 75
+    },
+    {
+      "taxonomy_id": "EMOT-P3",
+      "name": "Anxiety reduction (cost of living)",
+      "domain": "EMOT",
+      "moment": "manage",
+      "importance": 70,
+      "delivery": 35
+    },
+    {
+      "taxonomy_id": "COGN-P3",
+      "name": "Understanding (labels, provenance)",
+      "domain": "COGN",
+      "moment": "manage",
+      "importance": 45,
+      "delivery": 65
+    },
+    {
+      "taxonomy_id": "CTXT-P5",
+      "name": "Occasion fit",
+      "domain": "CTXT",
+      "moment": "celebrate",
+      "importance": 60,
+      "delivery": 85
+    },
+    {
+      "taxonomy_id": "SOCL-P1",
+      "name": "Shared experiences",
+      "domain": "SOCL",
+      "moment": "celebrate",
+      "importance": 50,
+      "delivery": 70
+    },
+    {
+      "taxonomy_id": "EMOT-P4",
+      "name": "Self-reward",
+      "domain": "EMOT",
+      "moment": "celebrate",
+      "importance": 55,
+      "delivery": 85
+    },
+    {
+      "taxonomy_id": "SOCL-P2",
+      "name": "Caring for others (feeding the family)",
+      "domain": "SOCL",
+      "moment": "care",
+      "importance": 70,
+      "delivery": 70
+    },
+    {
+      "taxonomy_id": "SOCL-P3",
+      "name": "Values alignment (sourcing, welfare)",
+      "domain": "SOCL",
+      "moment": "care",
+      "importance": 50,
+      "delivery": 85
+    },
+    {
+      "taxonomy_id": "COGN-P4",
+      "name": "Authenticity",
+      "domain": "COGN",
+      "moment": "care",
+      "importance": 45,
+      "delivery": 75
+    },
+    {
+      "taxonomy_id": "AGNT-P1",
+      "name": "Delegation confidence",
+      "domain": "AGNT",
+      "moment": null,
+      "importance": 40,
+      "delivery": 35
+    },
+    {
+      "taxonomy_id": "AGNT-P2",
+      "name": "Transparency",
+      "domain": "AGNT",
+      "moment": null,
+      "importance": 50,
+      "delivery": 50
+    },
+    {
+      "taxonomy_id": "AGNT-P3",
+      "name": "Override availability",
+      "domain": "AGNT",
+      "moment": null,
+      "importance": 45,
+      "delivery": 50
+    },
+    {
+      "taxonomy_id": "AGNT-P4",
+      "name": "System compatibility",
+      "domain": "AGNT",
+      "moment": null,
+      "importance": 40,
+      "delivery": 30
+    },
+    {
+      "taxonomy_id": "FUNC-P3",
+      "name": "Data privacy",
+      "domain": "FUNC",
+      "moment": null,
+      "importance": 45,
+      "delivery": 60
+    }
+  ],
+  "angles": [
+    {
+      "name": "Partnership Standards",
+      "moment": "CROSS",
+      "mindset": "Health-conscious/Label-reader",
+      "messaging": "Provenance/standards [CUSTOM: candidate Messaging value]",
+      "proof": "Sustainability/sourcing certification",
+      "context": "Family meal table"
+    },
+    {
+      "name": "Essentials, Honestly Priced",
+      "moment": "replenish",
+      "mindset": "Price-conscious/Deal-seeker",
+      "messaging": "Price-value",
+      "proof": "Price-comparison callout",
+      "context": "In-store/aisle"
+    },
+    {
+      "name": "Your Usual, Delivered",
+      "moment": "replenish",
+      "mindset": "Habitual/Routine-repeater",
+      "messaging": "Habit-reinforcement",
+      "proof": "Review/rating callout",
+      "context": "In-kitchen"
+    },
+    {
+      "name": "Dinner, Sorted",
+      "moment": "plan",
+      "mindset": "Convenience-first/Time-poor",
+      "messaging": "Convenience/time-saving",
+      "proof": "Chef/creator endorsement",
+      "context": "In-kitchen"
+    },
+    {
+      "name": "Free-From Without the Fuss",
+      "moment": "manage",
+      "mindset": "Health-conscious/Label-reader",
+      "messaging": "Health/functional benefit",
+      "proof": "Nutrition-label/ingredient callout",
+      "context": "In-kitchen"
+    },
+    {
+      "name": "Hosting, Done Properly",
+      "moment": "celebrate",
+      "mindset": "Occasion-driven/Host-mode",
+      "messaging": "Occasion-specific",
+      "proof": "Chef/creator endorsement",
+      "context": "Seasonal/holiday"
+    },
+    {
+      "name": "New This Week",
+      "moment": "discover",
+      "mindset": "Adventurous/Recipe-explorer",
+      "messaging": "Discovery/new-flavor",
+      "proof": "Chef/creator endorsement",
+      "context": "In-kitchen"
+    }
+  ]
+}

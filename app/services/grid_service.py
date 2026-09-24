@@ -33,19 +33,26 @@ MOMENT_QUESTIONS: dict[Moment, str] = {
 # the agent's rules, and a share of buyers will never delegate.
 L1_FLOOR = 0.15
 
+# Heat thresholds for a Moment's role. Heat decides what to fix or lead with,
+# never how much memory-building a Moment gets (that follows CEP size, Truth 1).
+FIX_AT = 5.0
+LEVERAGE_AT = -10.0
+
 
 @dataclass
 class MomentRow:
     moment: Moment
     question: str
     heat: float  # importance-weighted mean gap; >0 = under-delivery = opportunity
+    role: str  # fix | hold | leverage
+    cep_weight: int  # total category importance of the Moment's intents
     intent_count: int
     delegation_prior: float
     delegation_index: float
     l1_share: float  # share of L1 creative/CEP emphasis (not L1 budget)
     l3_share: float  # share of L3 protocol build effort
     angle_count: int
-    white_space: bool  # positive heat but no Angle serves it
+    white_space: bool  # fix or leverage Moment with no dedicated Angle
 
 
 @dataclass
@@ -65,6 +72,14 @@ def create_grid(db: Session, brand: str, market: str, category: str, notes: str 
     db.commit()
     db.refresh(grid)
     return grid
+
+
+def moment_role(heat: float) -> str:
+    if heat >= FIX_AT:
+        return "fix"
+    if heat <= LEVERAGE_AT:
+        return "leverage"
+    return "hold"
 
 
 def moment_heat(intents: list[IntentScore]) -> dict[Moment, tuple[float, int]]:
@@ -115,10 +130,13 @@ def summarise(grid: Grid) -> GridSummary:
     priors = {s.moment: s.delegation_prior for s in grid.moment_settings}
     di = {m: round(priors.get(m, 0.0) * (gate if gate is not None else 1.0), 2) for m in Moment}
 
-    # Only positive heat is opportunity; L1 reach itself is never cut here.
-    hot = {m: max(heat[m][0], 0.0) for m in Moment}
-    l1 = _shares({m: hot[m] * (1 - di[m]) + L1_FLOOR * (hot[m] or 1.0) for m in Moment})
-    l3 = _shares({m: hot[m] * di[m] for m in Moment})
+    # Emphasis follows the size of the Moment in the category (CEP weight),
+    # split by who decides it: people (L1 memory) or agents (L3 protocol).
+    # L1 reach itself is never cut here.
+    cep = {m: sum(i.importance for i in grid.intent_scores if i.moment == m) for m in Moment}
+    l1 = _shares({m: cep[m] * (1 - di[m] + L1_FLOOR) for m in Moment})
+    l3 = _shares({m: cep[m] * di[m] for m in Moment})
+    roles = {m: moment_role(heat[m][0]) for m in Moment}
 
     angle_counts = {m: sum(1 for a in grid.angles if a.moment == m) for m in Moment}
     rows = [
@@ -126,13 +144,15 @@ def summarise(grid: Grid) -> GridSummary:
             moment=m,
             question=MOMENT_QUESTIONS[m],
             heat=heat[m][0],
+            role=roles[m],
+            cep_weight=cep[m],
             intent_count=heat[m][1],
             delegation_prior=priors.get(m, 0.0),
             delegation_index=di[m],
             l1_share=l1[m],
             l3_share=l3[m],
             angle_count=angle_counts[m],
-            white_space=hot[m] > 0 and angle_counts[m] == 0,
+            white_space=roles[m] != "hold" and angle_counts[m] == 0,
         )
         for m in Moment
     ]
@@ -153,7 +173,7 @@ def export_json(grid: Grid) -> dict:
             "market": grid.market,
             "category": grid.category,
             "framework": "growth-grid",
-            "version": "0.2",
+            "version": "0.3",
             "source": "pipeline",
         },
         "need_state_heat": {r.moment.value: r.heat for r in s.rows},
@@ -162,6 +182,8 @@ def export_json(grid: Grid) -> dict:
             {
                 "moment": r.moment.value,
                 "heat": r.heat,
+                "role": r.role,
+                "cep_weight": r.cep_weight,
                 "delegation_prior": r.delegation_prior,
                 "delegation_index": r.delegation_index,
                 "l1_creative_share": r.l1_share,
@@ -197,3 +219,38 @@ def export_json(grid: Grid) -> dict:
         ],
         "spine_clashes": [list(c) for c in s.spine_clashes],
     }
+
+
+def import_grid(db: Session, data: dict) -> Grid:
+    """Create a grid from a pilot definition (see pilots/*.json)."""
+    meta = data["meta"]
+    grid = create_grid(db, meta["brand"], meta["market"], meta["category"], meta.get("notes"))
+    priors = data.get("delegation_priors", {})
+    for s in grid.moment_settings:
+        if s.moment.value in priors:
+            s.delegation_prior = float(priors[s.moment.value])
+    for i in data.get("intents", []):
+        grid.intent_scores.append(
+            IntentScore(
+                taxonomy_id=i["taxonomy_id"],
+                name=i["name"],
+                domain=IntentDomain(i["domain"]),
+                moment=Moment(i["moment"]) if i.get("moment") else None,
+                importance=i["importance"],
+                delivery=i["delivery"],
+            )
+        )
+    for a in data.get("angles", []):
+        grid.angles.append(
+            Angle(
+                name=a["name"],
+                moment=Moment(a["moment"]) if a.get("moment") not in (None, "", "CROSS") else None,
+                mindset=a["mindset"],
+                messaging=a["messaging"],
+                proof=a.get("proof"),
+                context=a.get("context"),
+            )
+        )
+    db.commit()
+    db.refresh(grid)
+    return grid

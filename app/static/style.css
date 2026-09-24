@@ -191,3 +191,7 @@
 .heat-neg { color: #15803d; }
 tr.white-space td { background: #fff7ed; }
 .notice-bad { background: #fee2e2; color: #991b1b; padding: 0.5rem 0.75rem; border-radius: 0.5rem; }
+.role { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.role-fix { color: #b45309; }
+.role-leverage { color: #15803d; }
+.role-hold { color: #64748b; }

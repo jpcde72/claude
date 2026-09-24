@@ -4,14 +4,14 @@
         <strong>The grid</strong>
         <p><small>
             Moments shape the creative and the build, never who the ads reach. L1 reach is funded first, to the efficient frontier.
-            Shares below split <em>creative/CEP emphasis</em> (L1) and <em>protocol build effort</em> (L3), not budget.
+            Emphasis follows each Moment's size in the category, split by who decides it: people (L1 memory) or agents (L3 protocol). Shares are emphasis, not budget. Heat sets the Moment's role: <em>fix</em> the gap, <em>leverage</em> the strength, or <em>hold</em>.
         </small></p>
     </header>
     <div class="overflow-auto">
     <table class="grid-table">
         <thead>
             <tr>
-                <th>Moment</th><th>Heat</th><th>Intents</th>
+                <th>Moment</th><th>Heat</th><th>Role</th><th>CEP weight</th>
                 <th>Delegation prior</th><th>Delegation index</th>
                 <th>L1 creative %</th><th>L3 protocol %</th><th>Angles</th>
             </tr>
@@ -21,7 +21,8 @@
             <tr{% if r.white_space %} class="white-space"{% endif %}>
                 <td><strong>{{ r.moment.value | capitalize }}</strong><br><small>&ldquo;{{ r.question }}&rdquo;</small></td>
                 <td class="{% if r.heat > 0 %}heat-pos{% elif r.heat < 0 %}heat-neg{% endif %}">{{ r.heat }}</td>
-                <td>{{ r.intent_count }}</td>
+                <td><span class="role role-{{ r.role }}">{{ r.role }}</span></td>
+                <td>{{ r.cep_weight }}</td>
                 <td>{{ r.delegation_prior }}</td>
                 <td>{{ r.delegation_index }}</td>
                 <td>{{ r.l1_share }}</td>

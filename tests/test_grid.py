@@ -61,18 +61,33 @@ def test_summary_shares_and_white_space(db):
     rows = {r.moment: r for r in s.rows}
     assert s.agentic_gate == 1.0
     assert rows[Moment.REPLENISH].delegation_index == 0.8
-    # Same heat, higher delegation -> more protocol effort, less memory emphasis.
+    # Same CEP weight, higher delegation -> more protocol effort, less memory emphasis.
     assert rows[Moment.REPLENISH].l3_share > rows[Moment.CELEBRATE].l3_share
     assert rows[Moment.REPLENISH].l1_share < rows[Moment.CELEBRATE].l1_share
     assert round(sum(r.l1_share for r in s.rows)) == 100
     assert round(sum(r.l3_share for r in s.rows)) == 100
-    # Every Moment keeps some memory emphasis.
-    assert all(r.l1_share > 0 for r in s.rows)
+    # Even a fully delegated Moment keeps some memory emphasis.
+    assert rows[Moment.REPLENISH].l1_share > 0
+    assert rows[Moment.REPLENISH].role == "fix" and rows[Moment.CARE].role == "hold"
     assert rows[Moment.REPLENISH].white_space and not rows[Moment.CELEBRATE].white_space
 
     out = export_json(grid)
     assert out["need_state_heat"]["replenish"] == 40.0
     assert out["angles"][0]["moment"] == "celebrate"
+
+
+def test_strength_keeps_memory_emphasis(db):
+    """A Moment the brand over-delivers on is led with, not starved (Truth 1)."""
+    grid = create_grid(db, "Brand", "UK", "Grocery", None)
+    grid.intent_scores += [
+        score("FUNC-01", IntentDomain.FUNC, Moment.PLAN, 60, 30),       # gap +30
+        score("EMOT-01", IntentDomain.EMOT, Moment.CELEBRATE, 60, 90),  # gap -30
+    ]
+    db.commit()
+    rows = {r.moment: r for r in summarise(grid).rows}
+    assert rows[Moment.CELEBRATE].role == "leverage"
+    assert rows[Moment.CELEBRATE].l1_share > rows[Moment.PLAN].l1_share
+    assert rows[Moment.CELEBRATE].white_space
 
 
 def test_grid_routes_end_to_end(client):
@@ -102,3 +117,19 @@ def test_grid_routes_end_to_end(client):
     assert data["moments"][0]["delegation_prior"] == 0.9
     assert data["spine_clashes"] == [["One", "Two"]]
     assert client.get("/grids/99/export.json").status_code == 404
+
+
+def test_import_grid_round_trips(db):
+    from app.services.grid_service import import_grid
+
+    grid = import_grid(db, {
+        "meta": {"brand": "B", "market": "UK", "category": "Grocery"},
+        "delegation_priors": {"care": 0.3},
+        "intents": [{"taxonomy_id": "AGNT-P01", "name": "Delegation", "domain": "AGNT",
+                     "moment": None, "importance": 40, "delivery": 20}],
+        "angles": [{"name": "X", "moment": "CROSS", "mindset": "M", "messaging": "Y"}],
+    })
+    out = export_json(grid)
+    assert out["agentic_gate"] == 0.5
+    assert [m["delegation_prior"] for m in out["moments"] if m["moment"] == "care"] == [0.3]
+    assert out["angles"][0]["moment"] == "CROSS"

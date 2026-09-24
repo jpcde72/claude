@@ -1,0 +1,376 @@
+{
+  "meta": {
+    "brand": "Lidl GB",
+    "market": "UK",
+    "category": "Grocery",
+    "framework": "growth-grid",
+    "version": "0.3",
+    "source": "pipeline"
+  },
+  "need_state_heat": {
+    "replenish": 8.0,
+    "plan": 11.2,
+    "discover": -15.7,
+    "manage": -3.8,
+    "celebrate": 1.8,
+    "care": -0.6
+  },
+  "agentic_gate": 0.51,
+  "moments": [
+    {
+      "moment": "replenish",
+      "heat": 8.0,
+      "role": "fix",
+      "cep_weight": 300,
+      "delegation_prior": 0.8,
+      "delegation_index": 0.41,
+      "l1_creative_share": 22.8,
+      "l3_protocol_share": 43.3,
+      "angles": 1,
+      "white_space": false
+    },
+    {
+      "moment": "plan",
+      "heat": 11.2,
+      "role": "fix",
+      "cep_weight": 190,
+      "delegation_prior": 0.65,
+      "delegation_index": 0.33,
+      "l1_creative_share": 16.0,
+      "l3_protocol_share": 22.1,
+      "angles": 1,
+      "white_space": false
+    },
+    {
+      "moment": "discover",
+      "heat": -15.7,
+      "role": "leverage",
+      "cep_weight": 105,
+      "delegation_prior": 0.45,
+      "delegation_index": 0.23,
+      "l1_creative_share": 9.9,
+      "l3_protocol_share": 8.5,
+      "angles": 1,
+      "white_space": false
+    },
+    {
+      "moment": "manage",
+      "heat": -3.8,
+      "role": "hold",
+      "cep_weight": 170,
+      "delegation_prior": 0.5,
+      "delegation_index": 0.26,
+      "l1_creative_share": 15.5,
+      "l3_protocol_share": 15.6,
+      "angles": 0,
+      "white_space": false
+    },
+    {
+      "moment": "celebrate",
+      "heat": 1.8,
+      "role": "hold",
+      "cep_weight": 165,
+      "delegation_prior": 0.2,
+      "delegation_index": 0.1,
+      "l1_creative_share": 17.8,
+      "l3_protocol_share": 5.8,
+      "angles": 1,
+      "white_space": false
+    },
+    {
+      "moment": "care",
+      "heat": -0.6,
+      "role": "hold",
+      "cep_weight": 165,
+      "delegation_prior": 0.15,
+      "delegation_index": 0.08,
+      "l1_creative_share": 18.1,
+      "l3_protocol_share": 4.7,
+      "angles": 1,
+      "white_space": false
+    }
+  ],
+  "intents": [
+    {
+      "taxonomy_id": "AGNT-P1",
+      "name": "Delegation confidence",
+      "domain": "AGNT",
+      "primary_state": null,
+      "modulator": true,
+      "importance": 40,
+      "delivery": 15,
+      "gap": 25
+    },
+    {
+      "taxonomy_id": "AGNT-P2",
+      "name": "Transparency",
+      "domain": "AGNT",
+      "primary_state": null,
+      "modulator": true,
+      "importance": 50,
+      "delivery": 35,
+      "gap": 15
+    },
+    {
+      "taxonomy_id": "AGNT-P3",
+      "name": "Override availability",
+      "domain": "AGNT",
+      "primary_state": null,
+      "modulator": true,
+      "importance": 45,
+      "delivery": 30,
+      "gap": 15
+    },
+    {
+      "taxonomy_id": "AGNT-P4",
+      "name": "System compatibility",
+      "domain": "AGNT",
+      "primary_state": null,
+      "modulator": true,
+      "importance": 40,
+      "delivery": 10,
+      "gap": 30
+    },
+    {
+      "taxonomy_id": "COGN-P1",
+      "name": "Simplification",
+      "domain": "COGN",
+      "primary_state": "plan",
+      "modulator": false,
+      "importance": 65,
+      "delivery": 75,
+      "gap": -10
+    },
+    {
+      "taxonomy_id": "COGN-P2",
+      "name": "Cognitive offload (lists, baskets)",
+      "domain": "COGN",
+      "primary_state": "plan",
+      "modulator": false,
+      "importance": 55,
+      "delivery": 30,
+      "gap": 25
+    },
+    {
+      "taxonomy_id": "COGN-P3",
+      "name": "Understanding (labels, provenance)",
+      "domain": "COGN",
+      "primary_state": "manage",
+      "modulator": false,
+      "importance": 45,
+      "delivery": 50,
+      "gap": -5
+    },
+    {
+      "taxonomy_id": "COGN-P4",
+      "name": "Authenticity",
+      "domain": "COGN",
+      "primary_state": "care",
+      "modulator": false,
+      "importance": 45,
+      "delivery": 55,
+      "gap": -10
+    },
+    {
+      "taxonomy_id": "CTXT-P1",
+      "name": "Budget fit",
+      "domain": "CTXT",
+      "primary_state": "replenish",
+      "modulator": false,
+      "importance": 90,
+      "delivery": 88,
+      "gap": 2
+    },
+    {
+      "taxonomy_id": "CTXT-P2",
+      "name": "Routine integration",
+      "domain": "CTXT",
+      "primary_state": "replenish",
+      "modulator": false,
+      "importance": 70,
+      "delivery": 55,
+      "gap": 15
+    },
+    {
+      "taxonomy_id": "CTXT-P3",
+      "name": "Supply availability (range in stock)",
+      "domain": "CTXT",
+      "primary_state": "replenish",
+      "modulator": false,
+      "importance": 75,
+      "delivery": 55,
+      "gap": 20
+    },
+    {
+      "taxonomy_id": "CTXT-P4",
+      "name": "Time constraints",
+      "domain": "CTXT",
+      "primary_state": "plan",
+      "modulator": false,
+      "importance": 70,
+      "delivery": 50,
+      "gap": 20
+    },
+    {
+      "taxonomy_id": "CTXT-P5",
+      "name": "Occasion fit",
+      "domain": "CTXT",
+      "primary_state": "celebrate",
+      "modulator": false,
+      "importance": 60,
+      "delivery": 55,
+      "gap": 5
+    },
+    {
+      "taxonomy_id": "EMOT-P1",
+      "name": "Excitement & stimulation",
+      "domain": "EMOT",
+      "primary_state": "discover",
+      "modulator": false,
+      "importance": 45,
+      "delivery": 75,
+      "gap": -30
+    },
+    {
+      "taxonomy_id": "EMOT-P2",
+      "name": "Pleasure (taste)",
+      "domain": "EMOT",
+      "primary_state": "discover",
+      "modulator": false,
+      "importance": 60,
+      "delivery": 65,
+      "gap": -5
+    },
+    {
+      "taxonomy_id": "EMOT-P3",
+      "name": "Anxiety reduction (cost of living)",
+      "domain": "EMOT",
+      "primary_state": "manage",
+      "modulator": false,
+      "importance": 70,
+      "delivery": 80,
+      "gap": -10
+    },
+    {
+      "taxonomy_id": "EMOT-P4",
+      "name": "Self-reward",
+      "domain": "EMOT",
+      "primary_state": "celebrate",
+      "modulator": false,
+      "importance": 55,
+      "delivery": 55,
+      "gap": 0
+    },
+    {
+      "taxonomy_id": "FUNC-P1",
+      "name": "Efficiency (quick shop)",
+      "domain": "FUNC",
+      "primary_state": "replenish",
+      "modulator": false,
+      "importance": 65,
+      "delivery": 70,
+      "gap": -5
+    },
+    {
+      "taxonomy_id": "FUNC-P2",
+      "name": "Risk mitigation (dietary, allergens)",
+      "domain": "FUNC",
+      "primary_state": "manage",
+      "modulator": false,
+      "importance": 55,
+      "delivery": 50,
+      "gap": 5
+    },
+    {
+      "taxonomy_id": "FUNC-P3",
+      "name": "Data privacy",
+      "domain": "FUNC",
+      "primary_state": null,
+      "modulator": true,
+      "importance": 45,
+      "delivery": 55,
+      "gap": -10
+    },
+    {
+      "taxonomy_id": "SOCL-P1",
+      "name": "Shared experiences",
+      "domain": "SOCL",
+      "primary_state": "celebrate",
+      "modulator": false,
+      "importance": 50,
+      "delivery": 50,
+      "gap": 0
+    },
+    {
+      "taxonomy_id": "SOCL-P2",
+      "name": "Caring for others (feeding the family)",
+      "domain": "SOCL",
+      "primary_state": "care",
+      "modulator": false,
+      "importance": 70,
+      "delivery": 65,
+      "gap": 5
+    },
+    {
+      "taxonomy_id": "SOCL-P3",
+      "name": "Values alignment (sourcing, welfare)",
+      "domain": "SOCL",
+      "primary_state": "care",
+      "modulator": false,
+      "importance": 50,
+      "delivery": 50,
+      "gap": 0
+    }
+  ],
+  "angles": [
+    {
+      "name": "Lidl Price Promise",
+      "moment": "CROSS",
+      "mindset": "Price-conscious/Deal-seeker",
+      "messaging": "Price-value",
+      "proof": "Price-comparison callout",
+      "context": "In-store/aisle"
+    },
+    {
+      "name": "Big Shop, Smaller Bill",
+      "moment": "replenish",
+      "mindset": "Habitual/Routine-repeater",
+      "messaging": "Habit-reinforcement",
+      "proof": "Review/rating callout",
+      "context": "In-store/aisle"
+    },
+    {
+      "name": "Plan It on Lidl Plus",
+      "moment": "plan",
+      "mindset": "Convenience-first/Time-poor",
+      "messaging": "Convenience/time-saving",
+      "proof": "Before-after (meal transformation)",
+      "context": "In-kitchen"
+    },
+    {
+      "name": "Middle of Lidl",
+      "moment": "discover",
+      "mindset": "Adventurous/Recipe-explorer",
+      "messaging": "Discovery/new-flavor",
+      "proof": "Review/rating callout",
+      "context": "In-store/aisle"
+    },
+    {
+      "name": "Deluxe for Less",
+      "moment": "celebrate",
+      "mindset": "Occasion-driven/Host-mode",
+      "messaging": "Occasion-specific",
+      "proof": "Chef/creator endorsement",
+      "context": "Seasonal/holiday"
+    },
+    {
+      "name": "Fresh from British Farms",
+      "moment": "care",
+      "mindset": "Health-conscious/Label-reader",
+      "messaging": "Health/functional benefit",
+      "proof": "Sustainability/sourcing certification",
+      "context": "Family meal table"
+    }
+  ],
+  "spine_clashes": []
+}

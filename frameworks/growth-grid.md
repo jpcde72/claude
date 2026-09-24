@@ -1,6 +1,6 @@
 # The Growth Grid — a unified growth system
 
-*v0.2 (draft). Author and IP owner: **Jean-Paul Edwards**. Combines four of the author's frameworks: **Intent Planning** (the consumer-intent-modeler and intent-planner skills), **First-Principles Media**, the **Media Operating System** and the **Creative Signal Taxonomy**. Status: an architecture to test. It has not been validated.*
+*v0.3 (draft; first pilot: `pilots/uk-grocery-lidl-vs-waitrose.md`). Author and IP owner: **Jean-Paul Edwards**. Combines four of the author's frameworks: **Intent Planning** (the consumer-intent-modeler and intent-planner skills), **First-Principles Media**, the **Media Operating System** and the **Creative Signal Taxonomy**. Status: an architecture to test. It has not been validated.*
 
 > **IP and portability.** The Growth Grid and its parent frameworks are the author's own IP. They are general principles that any brand, agency, platform or market can apply. Where the parent skills mention a specific organisation (for example OMD / Omnicom Media, Omni, Acxiom, Flywheel), that is **one example of the system in use**, not where it came from and not a limit on who can use it. Organisation-specific material lives in clearly labelled application notes, kept apart from the core principles.
 
@@ -63,9 +63,13 @@ Moments differ in how willingly people hand them to AI agents (the **delegation 
 ```
 AgenticGate          = min(1, Σ delivery(AGNT modulators) / Σ importance(AGNT modulators))   # brand/category level
 DelegationIndex(m)   = DelegationPrior(m) × AgenticGate
-L3 weight(m)         ∝ max(Heat(m),0) × DelegationIndex(m)
-L1 creative weight(m)∝ max(Heat(m),0) × (1 − DelegationIndex(m)) + floor
+CEPWeight(m)         = Σ importance of the Moment's intents        # the Moment's size in the category
+L1 memory emphasis(m)∝ CEPWeight(m) × (1 − DelegationIndex(m) + floor)
+L3 protocol effort(m)∝ CEPWeight(m) × DelegationIndex(m)
+Role(m)              = fix (Heat ≥ 5) | leverage (Heat ≤ −10) | hold
 ```
+
+**v0.3 correction (from the Lidl/Waitrose pilot):** v0.2 weighted emphasis by *gap*, which starved the Moments a brand over-delivers on. That breaks Truth 1: memory has to be built across every CEP, and strengths are what the creative should lead with. Emphasis now follows the Moment's size in the category. Heat only decides the Moment's **role**: *fix* the gap (product, proof, utility), *leverage* the strength (lead the creative with it), or *hold*.
 
 The priors (Replenish 0.80 → Care 0.15) are **hypotheses** and can be edited per grid. Replace them with observed agent-referred share per Moment once the pilot produces it.
 
