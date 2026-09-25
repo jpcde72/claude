@@ -1,0 +1,224 @@
+<title>First Light</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Outfit:wght@300;500&family=Space+Mono&display=swap">
+<style>
+  :root { color-scheme: dark; --bg: #0A0A0A; }
+  html, body { height: 100%; margin: 0; background: var(--bg); overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+</style>
+<canvas aria-label="Thirty-second animation: one year of sunrises at six tropical latitudes draws the
+ sunrise-delta mark, lights on a dark sea wake one by one and link into a network, then the sun rises
+ over the water and the line 'Somewhere, it is always sunrise.' appears."></canvas>
+<script>
+// First Light: a companion to Residue. Thirty seconds, 1920x1080 stage.
+// The sky draws one real year of sunrises at the six latitudes of the
+// sunrise-delta mark. Each light on the sea wakes when the year reaches it
+// and links to the nearest light already awake, so the network is a
+// spanning tree: nobody is left out. Then the sun comes up.
+
+const PAL = ['#4B2E83', '#7B3FAB', '#C026A0', '#F05A28', '#F78DA7', '#FFCC00'];
+const LATS = [23.44, 19.0, 14.5, 10.0, 5.0, 0.8];
+const SW = 1920, SH = 1080, HORIZON = 640, X0 = 190, XW = 1540;
+const YEAR = [3, 19], SUN = [18.5, 26], LINE = 23.2;
+const MONTHS = 'JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC'.split(' ');
+const MDAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+const cv = document.querySelector('canvas'), g = cv.getContext('2d');
+const hash = (a, b) => { let h = Math.imul(a, 374761393) + Math.imul(b, 668265263) | 0;
+  h = Math.imul(h ^ h >>> 13, 1274126177); return ((h ^ h >>> 16) >>> 0) / 4294967296; };
+const clamp = v => Math.min(1, Math.max(0, v));
+const ramp = (a, b, t) => clamp((t - a) / (b - a));
+const ease = x => x * x * (3 - 2 * x);
+const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a})`;
+
+// Same solar maths as the mark: sunrise hour at a latitude on a day of the year.
+function sunrise(lat, day) {
+  const decl = -23.44 * Math.cos(2 * Math.PI / 365 * (day + 10));
+  const x = clamp((-Math.tan(lat * Math.PI / 180) * Math.tan(decl * Math.PI / 180) + 1) / 2) * 2 - 1;
+  return 12 - Math.acos(x) * 180 / Math.PI / 15;
+}
+const curveY = (i, day) => 420 + (i - 2.5) * 34 - (sunrise(LATS[i], day) - 6) * 95;
+const dayAt = t => 365 * ramp(YEAR[0], YEAR[1], t);
+const xOfDay = d => X0 + XW * d / 365;
+
+// Lights on the sea. Nearer the horizon means further away: smaller, and the
+// outer latitude colours; nearer the viewer runs toward the warm core.
+const lights = [];
+for (let i = 0; i < 170; i++) {
+  const depth = Math.pow(hash(i, 2), 1.6), x = X0 + XW * hash(i, 1);
+  lights.push({ x, y: HORIZON + 26 + depth * 330, r: 1.4 + depth * 3.4,
+    band: Math.min(5, Math.floor(depth * 6)), t: YEAR[0] + (YEAR[1] - YEAR[0]) * (x - X0) / XW + hash(i, 3) * 0.3,
+    bell: hash(i, 4) < 0.55, link: -1 });
+}
+lights.sort((a, b) => a.t - b.t);
+lights.forEach((l, i) => { let best = Infinity;
+  for (let j = 0; j < i; j++) { const d = Math.hypot(l.x - lights[j].x, (l.y - lights[j].y) * 1.8);
+    if (d < best) best = d, l.link = j; } });
+window.EVENTS = lights.filter(l => l.bell).map(l => ({ t: l.t, band: l.band }));
+
+const stars = Array.from({ length: 260 }, (_, i) => ({ x: SW * hash(i, 11), y: HORIZON * hash(i, 12) ** 1.3,
+  r: 0.4 + hash(i, 13) * 1.1, p: hash(i, 14) * 6.28 }));
+
+let scale = 1, offX = 0, offY = 0;
+function fit() {
+  const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d;
+  scale = Math.min(innerWidth / SW, innerHeight / SH) * d;
+  offX = (cv.width - SW * scale) / 2; offY = (cv.height - SH * scale) / 2;
+}
+function text(s, x, y, font, color, align = 'left', spacing = '0px') {
+  g.font = font; g.fillStyle = color; g.textAlign = align; g.letterSpacing = spacing; g.fillText(s, x, y);
+  g.letterSpacing = '0px';
+}
+function dateLabel(day) {
+  let d = Math.min(364, Math.floor(day)), m = 0; while (d >= MDAYS[m]) d -= MDAYS[m++];
+  return `DAY ${String(Math.min(365, Math.floor(day) + 1)).padStart(3, '0')}  ·  ${String(d + 1).padStart(2, '0')} ${MONTHS[m]}`;
+}
+
+function frame(t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#0A0A0A'; g.fillRect(0, 0, cv.width, cv.height);
+  g.setTransform(scale, 0, 0, scale, offX, offY);
+  g.save(); g.beginPath(); g.rect(0, 0, SW, SH); g.clip();
+  const open = ease(ramp(0, 2, t)), rise = ease(ramp(SUN[0], SUN[1], t)), day = dayAt(t);
+  const dawn = 0.12 + 0.3 * ramp(YEAR[0], YEAR[1], t) + 0.58 * rise;
+  const sunY = HORIZON + 70 - rise * 210, sunX = SW / 2;
+
+  // Sky: the glow is the latitude sequence itself, violet outermost, solar at the core.
+  g.globalAlpha = open;
+  const sky = g.createRadialGradient(sunX, HORIZON + 40, 0, sunX, HORIZON + 40, 1250);
+  const stops = [0, 0.1, 0.22, 0.36, 0.55, 0.82];
+  for (let i = 5; i >= 0; i--) sky.addColorStop(stops[5 - i], rgba(PAL[i], (i >= 4 ? rise : 1) * dawn * (0.25 + 0.15 * i / 5)));
+  sky.addColorStop(1, 'rgba(10,10,10,0)');
+  g.fillStyle = sky; g.fillRect(0, 0, SW, HORIZON);
+
+  for (const s of stars) {
+    const a = (0.55 + 0.45 * Math.sin(t * 1.3 + s.p)) * (1 - rise) * (1 - s.y / HORIZON * 0.6);
+    g.fillStyle = `rgba(255,255,255,${a * 0.7})`; g.beginPath(); g.arc(s.x, s.y, s.r, 0, 6.29); g.fill();
+  }
+
+  // The sun, clipped by the horizon.
+  if (rise > 0) {
+    g.save(); g.beginPath(); g.rect(0, 0, SW, HORIZON); g.clip();
+    const halo = g.createRadialGradient(sunX, sunY, 40, sunX, sunY, 420);
+    halo.addColorStop(0, rgba(PAL[5], 0.55 * rise)); halo.addColorStop(0.3, rgba(PAL[4], 0.22 * rise));
+    halo.addColorStop(1, 'rgba(240,90,40,0)');
+    g.fillStyle = halo; g.fillRect(0, 0, SW, HORIZON);
+    g.fillStyle = PAL[5]; g.beginPath(); g.arc(sunX, sunY, 92, 0, 6.29); g.fill();
+    g.restore();
+  }
+
+  // Sea: a dark plane with the sky's reflection and a glitter path under the sun.
+  const sea = g.createLinearGradient(0, HORIZON, 0, SH);
+  sea.addColorStop(0, rgba(PAL[2], 0.10 * dawn)); sea.addColorStop(0.4, 'rgba(10,10,10,0)');
+  g.fillStyle = '#0A0A0A'; g.fillRect(0, HORIZON, SW, SH - HORIZON);
+  g.fillStyle = sea; g.fillRect(0, HORIZON, SW, SH - HORIZON);
+  g.fillStyle = `rgba(255,255,255,${0.14 * open})`; g.fillRect(0, HORIZON, SW, 1);
+  for (let i = 0; rise > 0 && i < 170; i++) {
+    const depth = hash(i, 21), y = HORIZON + 6 + depth * depth * 400;
+    const spread = 30 + depth * 260, x = sunX + (hash(i, 22) - 0.5) * spread * 2 * (0.4 + hash(i, 23));
+    const tw = hash(i, Math.floor(t * 9) + 30), w = (8 + depth * 60) * (0.4 + tw);
+    g.fillStyle = rgba(tw > 0.6 ? PAL[5] : tw > 0.3 ? PAL[4] : PAL[3], rise * (0.25 + 0.5 * tw) * (1 - depth * 0.5));
+    g.fillRect(x - w / 2, y, w, 1 + depth * 2.5);
+  }
+
+  // The mark, drawn one day at a time, each curve with a soft glow and a bright tip.
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  const done = Math.floor(day);
+  for (let i = 0; i < 6 && day > 0; i++) {
+    g.beginPath();
+    for (let d = 0; d <= done; d += 2) g[d ? 'lineTo' : 'moveTo'](xOfDay(d), curveY(i, d));
+    g.lineTo(xOfDay(day), curveY(i, day));
+    g.strokeStyle = rgba(PAL[i], 0.28 * open); g.lineWidth = 16; g.shadowColor = PAL[i]; g.shadowBlur = 18; g.stroke();
+    g.shadowBlur = 0; g.strokeStyle = rgba(PAL[i], open); g.lineWidth = 6; g.stroke();
+    if (day < 365) { g.fillStyle = '#FFFFFF'; g.beginPath(); g.arc(xOfDay(day), curveY(i, day), 3.2, 0, 6.29); g.fill(); }
+    else text(`${LATS[i]}°N`, X0 + XW + 26, curveY(i, 365) + 5,
+      '400 14px "Space Mono", "Courier New", monospace', rgba(PAL[i], ramp(YEAR[1], YEAR[1] + 1 + i * 0.15, t)), 'left', '2px');
+  }
+  if (day > 0 && day < 365) { g.strokeStyle = 'rgba(255,255,255,0.10)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(xOfDay(day), 260); g.lineTo(xOfDay(day), SH - 90); g.stroke(); }
+
+  // Lights and their links. Each link grows out from the light it reaches back to.
+  for (const l of lights) {
+    const on = ramp(l.t, l.t + 0.6, t);
+    if (on <= 0 || l.link < 0) continue;
+    const m = lights[l.link], grow = ease(on), mx = (l.x + m.x) / 2, my = Math.max(l.y, m.y) + 18 + Math.abs(l.x - m.x) * 0.12;
+    g.strokeStyle = rgba(PAL[l.band], 0.28 + 0.22 * rise); g.lineWidth = 0.9;
+    g.beginPath(); g.moveTo(m.x, m.y);
+    const steps = 16;
+    for (let k = 1; k <= steps * grow; k++) { const u = k / steps;
+      g.lineTo((1 - u) ** 2 * m.x + 2 * u * (1 - u) * mx + u * u * l.x, (1 - u) ** 2 * m.y + 2 * u * (1 - u) * my + u * u * l.y); }
+    g.stroke();
+  }
+  for (const l of lights) {
+    const on = ramp(l.t, l.t + 0.6, t), flash = Math.exp(-Math.max(0, t - l.t) * 2.2);
+    g.fillStyle = on ? rgba(PAL[l.band], 0.5 + 0.5 * on) : `rgba(255,255,255,${0.06 * open})`;
+    g.beginPath(); g.arc(l.x, l.y, l.r * (1 + 1.4 * flash * on), 0, 6.29); g.fill();
+    if (on && flash > 0.05) { g.fillStyle = rgba(PAL[l.band], 0.25 * flash);
+      g.beginPath(); g.arc(l.x, l.y, l.r * 7, 0, 6.29); g.fill(); }
+  }
+
+  // Words.
+  const kick = ramp(1, 2.5, t) * (1 - ramp(LINE - 1, LINE, t));
+  text('SUNRISE DELTA  ·  SIX LATITUDES  ·  ONE YEAR', X0, 150, '400 15px "Space Mono", "Courier New", monospace',
+    `rgba(176,176,176,${kick})`, 'left', '4.5px');
+  text(dateLabel(day), X0 + XW, 150, '400 15px "Space Mono", "Courier New", monospace',
+    `rgba(176,176,176,${kick * ramp(YEAR[0], YEAR[0] + 0.6, t)})`, 'right', '4.5px');
+  const line = ease(ramp(LINE, LINE + 1.4, t));
+  if (line > 0) {
+    g.save(); g.globalAlpha = line; g.translate(0, 20 * (1 - line));
+    g.font = 'italic 300 84px Fraunces, Georgia, serif'; g.textAlign = 'left';
+    const a = 'Somewhere, it is always ', b = 'sunrise.', wa = g.measureText(a).width, wb = g.measureText(b).width;
+    const x = SW / 2 - (wa + wb) / 2;
+    g.fillStyle = '#FFFFFF'; g.fillText(a, x, 180);
+    const grad = g.createLinearGradient(x + wa, 0, x + wa + wb, 0);
+    grad.addColorStop(0, PAL[2]); grad.addColorStop(0.55, PAL[3]); grad.addColorStop(1, PAL[5]);
+    g.fillStyle = grad; g.fillText(b, x + wa, 180);
+    g.restore();
+  }
+  const sig = ramp(26, 27.5, t);
+  text('jean-paul', X0, SH - 44, 'italic 400 30px Fraunces, Georgia, serif', `rgba(255,255,255,${sig})`);
+  text('CLICK TO REPLAY WITH SOUND', X0 + XW, SH - 50, '400 12px "Space Mono", "Courier New", monospace',
+    `rgba(176,176,176,${ramp(29, 30, t) * 0.8})`, 'right', '3.5px');
+  const seg = SW / 6;
+  PAL.forEach((c, i) => { g.fillStyle = rgba(c, open); g.fillRect(i * seg, SH - 6, seg + 1, 6); });
+  g.restore();
+}
+
+// Sound: a pad that moves from open fifths to a resolved E major, and a small
+// bell for each light, pitched by latitude (violet lowest, solar highest).
+const NOTES = [329.63, 369.99, 415.3, 493.88, 554.37, 659.25];
+let audio = null;
+function playSound(from) {
+  const A = audio = audio || new AudioContext(), now = A.currentTime + 0.05, out = A.createGain();
+  out.gain.value = 0.9; out.connect(A.destination);
+  const pad = (freqs, t0, t1, peak) => freqs.forEach(f => [-3, 3].forEach(cents => {
+    const o = A.createOscillator(), v = A.createGain(); o.type = 'sine'; o.frequency.value = f; o.detune.value = cents;
+    const s = now + Math.max(0, t0 - from), e = now + Math.max(0.01, t1 - from);
+    v.gain.setValueAtTime(0, s); v.gain.linearRampToValueAtTime(peak, s + (t1 - t0) * 0.4);
+    v.gain.linearRampToValueAtTime(0, e); o.connect(v).connect(out); o.start(s); o.stop(e + 0.1); }));
+  pad([82.41, 123.47, 185.0], 0, 20, 0.05);
+  pad([110.0, 164.81, 246.94, 277.18], 17.5, 26.5, 0.045);
+  pad([82.41, 164.81, 207.65, 246.94, 329.63], 24.5, 30, 0.05);
+  for (const ev of EVENTS) {
+    if (ev.t < from) continue;
+    const s = now + ev.t - from, o = A.createOscillator(), o2 = A.createOscillator(), v = A.createGain();
+    o.frequency.value = NOTES[ev.band]; o2.frequency.value = NOTES[ev.band] * 2.76;
+    v.gain.setValueAtTime(0, s); v.gain.linearRampToValueAtTime(0.045, s + 0.01); v.gain.exponentialRampToValueAtTime(0.0005, s + 2.2);
+    const v2 = A.createGain(); v2.gain.value = 0.15; o2.connect(v2).connect(v); o.connect(v).connect(out);
+    o.start(s); o2.start(s); o.stop(s + 2.3); o2.stop(s + 2.3);
+  }
+  setTimeout(() => out.disconnect(), (30 - from) * 1000 + 3000);
+}
+
+let t0 = performance.now(), fixed = null;
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) t0 -= 30000;
+window.renderAt = t => { fixed = t; frame(t); };
+addEventListener('resize', fit);
+cv.addEventListener('click', () => { t0 = performance.now(); try { playSound(0); } catch (e) {} });
+fit();
+Promise.all(['italic 300 84px Fraunces', 'italic 400 30px Fraunces', '15px "Space Mono"']
+  .map(f => document.fonts.load(f))).catch(() => {}).then(() => { t0 = performance.now(); });
+(function loop(now) {
+  frame(fixed ?? Math.min(30, (now - t0) / 1000)); requestAnimationFrame(loop);
+})(performance.now());
+</script>
