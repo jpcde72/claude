@@ -1,0 +1,197 @@
+<title>Sanza Round</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Space+Mono&display=swap">
+<style>
+  :root { color-scheme: dark; --bg: #0A0A0A; }
+  html, body { height: 100%; margin: 0; background: var(--bg); overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+</style>
+<canvas aria-label="Thirty-second animation with music: a six-voice round on thumb piano, dub bass,
+ Rhodes, organ, flute and bells. Each voice draws the same melody as a coloured line, entering one
+ bar after the last, so the lines stack like the sunrise-delta mark. A drum break scrolls across a
+ sampler display below. At the end the line 'Everyone gets the same sun, just not at once.' appears."></canvas>
+<audio id="track" src="sanza-round.mp3" preload="auto"></audio>
+<script>
+// Sanza Round: the fourth piece. Built from real listening data, where Dawn Set was a guess.
+// One melody in D minor pentatonic, played as a round (after Moondog): six voices,
+// each entering a bar after the last. Sunrise works the same way: one event reaching
+// each latitude at a different time. So the round draws the mark.
+// A swung 96 BPM break runs underneath, with a dub drop in bar 9 and trims where voices cut out.
+
+const PAL = ['#4B2E83', '#7B3FAB', '#C026A0', '#F05A28', '#F78DA7', '#FFCC00'];
+const SW = 1920, SH = 1080, X0 = 190, XW = 1540, LEN = 30, BAR = 2.5, S16 = BAR / 16;
+const cv = document.querySelector('canvas'), g = cv.getContext('2d'), track = document.getElementById('track');
+const hash = (a, b) => { let h = Math.imul(a, 374761393) + Math.imul(b, 668265263) | 0;
+  h = Math.imul(h ^ h >>> 13, 1274126177); return ((h ^ h >>> 16) >>> 0) / 4294967296; };
+const clamp = v => Math.min(1, Math.max(0, v)), ramp = (a, b, t) => clamp((t - a) / (b - a));
+const ease = x => x * x * (3 - 2 * x);
+const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a})`;
+const xAt = t => X0 + XW * t / LEN;
+
+// The melody: two bars of D minor pentatonic, as [midi, sixteenths].
+const MELODY = [
+  [[62, 2], [65, 1], [67, 3], [69, 2], [72, 2], [69, 2], [67, 2], [65, 2]],
+  [[67, 3], [65, 1], [62, 4], [60, 2], [62, 2], [57, 2], [60, 2]]];
+const VOICES = [
+  { name: 'SANZA', shift: 0, enter: 0, keep: () => true },
+  { name: 'DUB BASS', shift: -24, enter: 1, keep: d => d >= 2 },
+  { name: 'RHODES', shift: -12, enter: 2, keep: () => true },
+  { name: 'ORGAN', shift: -12, enter: 3, keep: () => true },
+  { name: 'FLUTE', shift: 12, enter: 4, keep: () => true },
+  { name: 'BELLS', shift: 24, enter: 5, keep: d => d >= 2 }];
+const SECTIONS = ['SANZA ALONE', 'BASS', 'THE BREAK', 'ORGAN', 'FLUTE', 'FULL ROUND', 'FULL ROUND', 'FULL ROUND',
+  'DUB', 'RETURN', 'RETURN', 'TRIM'];
+
+// Swing pushes every other sixteenth late; a little hash-based looseness keeps it human.
+const when = (bar, step, salt) => Math.max(0, bar * BAR + step * S16 + (step % 2 ? 0.028 : 0) + (hash(bar * 16 + step, salt) - 0.5) * 0.012);
+const SCORE = [];
+VOICES.forEach((v, vi) => {
+  for (let b = v.enter; b < 12; b++) {
+    if (b === 8 && vi !== 1) continue;
+    if (b === 11 && vi !== 0 && vi !== 5) continue;
+    let step = 0;
+    for (const [p, d] of MELODY[(b - v.enter) % 2]) {
+      if (b === 11 && step >= 8) { SCORE.push({ type: 'note', voice: vi, t: when(b, 8, vi), pitch: 62 + v.shift, dur: 8 * S16 + 1.2, vel: 0.9 }); break; }
+      if (v.keep(d)) SCORE.push({ type: 'note', voice: vi, t: when(b, step, vi), pitch: p + v.shift, dur: d * S16, vel: 0.75 + 0.3 * hash(b * 16 + step, vi + 40) });
+      step += d;
+    }
+  }
+});
+// The break: kick, snare with ghost notes, hats; thinned to kick and snare for the dub bar.
+const KICK = [[0, 6, 10], [0, 3, 10, 11]], SNARE = [4, 12], GHOST = [7, 9, 15];
+for (let b = 2; b <= 10; b++) {
+  const dub = b === 8;
+  for (const s of KICK[b % 2]) SCORE.push({ type: 'kick', t: when(b, s, 90), vel: s ? 0.85 : 1 });
+  for (const s of SNARE) SCORE.push({ type: 'snare', t: when(b, s, 91), vel: 1, echo: dub && s === 12 });
+  if (!dub) for (const s of GHOST) SCORE.push({ type: 'snare', t: when(b, s, 92), vel: 0.22 });
+  if (!dub) for (let s = 0; s < 16; s += 2) SCORE.push({ type: 'hat', t: when(b, s, 93), vel: s === 14 ? 0.9 : 0.5 + 0.2 * (s % 4 === 0), open: s === 14 });
+  if (b === 7) for (const s of [13, 14, 15]) SCORE.push({ type: 'snare', t: when(b, s, 94), vel: 0.5 + 0.15 * (s - 13) });
+}
+SCORE.push({ type: 'throw', t: 8 * BAR, voice: 0, pitch: 60, vel: 0.9 });
+SCORE.sort((a, b) => a.t - b.t);
+window.SCORE = SCORE;
+const NOTES = VOICES.map((v, vi) => SCORE.filter(e => e.type === 'note' && e.voice === vi));
+const DRUMS = SCORE.filter(e => e.type === 'kick' || e.type === 'snare' || e.type === 'hat');
+
+let scale = 1, offX = 0, offY = 0;
+function fit() {
+  const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d;
+  scale = Math.min(innerWidth / SW, innerHeight / SH) * d;
+  offX = (cv.width - SW * scale) / 2; offY = (cv.height - SH * scale) / 2;
+}
+function text(s, x, y, font, color, align = 'left', spacing = '0px') {
+  g.font = font; g.fillStyle = color; g.textAlign = align; g.letterSpacing = spacing; g.fillText(s, x, y); g.letterSpacing = '0px';
+}
+const bandY = vi => 300 + vi * 64;
+const pitchY = (vi, p) => bandY(vi) - (p - VOICES[vi].shift - 65) * 6.5;
+
+// Each voice as a gliding line: sample the active note every 20 ms and ease toward it.
+function voiceLine(vi, t) {
+  const notes = NOTES[vi], segs = []; let seg = null, y = null, k = 0;
+  for (let s = notes.length ? notes[0].t : 0; s <= t; s += 0.02) {
+    while (k < notes.length - 1 && notes[k + 1].t <= s) k++;
+    const n = notes[k], on = n && s >= n.t && s <= n.t + n.dur + 0.03;
+    if (!on) { seg = null; y = null; continue; }
+    const target = pitchY(vi, n.pitch); y = y === null ? target : y + (target - y) * 0.2;
+    if (!seg) segs.push(seg = []);
+    seg.push([xAt(s), y]);
+  }
+  return segs;
+}
+
+function frame(t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#0A0A0A'; g.fillRect(0, 0, cv.width, cv.height);
+  g.setTransform(scale, 0, 0, scale, offX, offY);
+  g.save(); g.beginPath(); g.rect(0, 0, SW, SH); g.clip();
+  const open = ease(ramp(0, 1.2, t)), bar = Math.min(11, Math.floor(t / BAR));
+  g.globalAlpha = open;
+
+  // Warmth builds with the number of voices sounding.
+  const voices = VOICES.filter((v, vi) => NOTES[vi].some(n => n.t <= t && t <= n.t + n.dur + 0.1)).length;
+  const glow = g.createRadialGradient(SW / 2, 470, 0, SW / 2, 470, 1100);
+  glow.addColorStop(0, rgba(PAL[3], 0.03 + 0.03 * voices)); glow.addColorStop(0.5, rgba(PAL[1], 0.02 + 0.015 * voices));
+  glow.addColorStop(1, 'rgba(10,10,10,0)'); g.fillStyle = glow; g.fillRect(0, 0, SW, SH);
+
+  // Bar grid: faint, like a sequencer.
+  for (let b = 0; b <= 12; b++) { g.fillStyle = `rgba(255,255,255,${b % 4 ? 0.035 : 0.07})`; g.fillRect(xAt(b * BAR), 260, 1, 620); }
+
+  // The six voices.
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  VOICES.forEach((v, vi) => {
+    const segs = voiceLine(vi, t);
+    for (const seg of segs) {
+      if (seg.length < 2) continue;
+      g.beginPath(); seg.forEach(([x, y], i) => g[i ? 'lineTo' : 'moveTo'](x, y));
+      g.strokeStyle = rgba(PAL[vi], 0.28); g.lineWidth = 14; g.shadowColor = PAL[vi]; g.shadowBlur = 16; g.stroke();
+      g.shadowBlur = 0; g.strokeStyle = PAL[vi]; g.lineWidth = 5; g.stroke();
+    }
+    const n = NOTES[vi].find(n => n.t <= t && t <= n.t + n.dur);
+    if (n) { const f = Math.exp(-(t - n.t) * 8); g.fillStyle = `rgba(255,255,255,${0.6 + 0.4 * f})`;
+      g.beginPath(); g.arc(xAt(t), pitchY(vi, n.pitch), 3 + 5 * f, 0, 6.29); g.fill(); }
+    const first = NOTES[vi][0];
+    if (first) text(v.name, xAt(first.t), bandY(vi) - 34, '400 11px "Space Mono", "Courier New", monospace',
+      rgba(PAL[vi], ramp(first.t - 0.2, first.t + 0.4, t) * 0.9), 'left', '3px');
+  });
+  // The dub throw: the thumb piano's last note repeating into the gap and fading.
+  for (const e of SCORE.filter(e => e.type === 'throw' && e.t <= t))
+    for (let k = 0; k < 7; k++) { const te = e.t + k * 0.469; if (te > t) break;
+      g.fillStyle = rgba(PAL[0], 0.85 * Math.pow(0.62, k)); g.beginPath(); g.arc(xAt(te), pitchY(0, e.pitch), 6 - k * 0.6, 0, 6.29); g.fill(); }
+
+  // The sampler: the break's envelope, chopped at every bar.
+  const SY = 945;
+  g.fillStyle = 'rgba(255,255,255,0.05)'; g.fillRect(X0, SY, XW, 1);
+  for (let x = X0; x < xAt(t); x += 3) {
+    const s = (x - X0) / XW * LEN; let a = 0;
+    for (const e of DRUMS) { if (e.t > s) break; const age = s - e.t;
+      a += e.vel * (e.type === 'kick' ? Math.exp(-age * 9) : e.type === 'snare' ? 0.8 * Math.exp(-age * 14) : 0.35 * Math.exp(-age * (e.open ? 7 : 40))); }
+    a = Math.min(1, a) * 46 * (0.85 + 0.15 * hash(x, 7));
+    if (a < 0.5) continue;
+    g.fillStyle = rgba(PAL[Math.min(5, Math.floor((x - X0) / XW * 6))], 0.75); g.fillRect(x, SY - a, 2, a * 2);
+  }
+  for (let b = 0; b < 12; b++) {
+    const lit = b === bar ? 1 : 0.35;
+    g.fillStyle = `rgba(255,255,255,${0.12 * lit})`; g.fillRect(xAt(b * BAR), SY - 58, 1, 116);
+    text(String(b + 1).padStart(2, '0'), xAt(b * BAR) + 6, SY + 72, '400 11px "Space Mono", "Courier New", monospace', `rgba(176,176,176,${0.9 * lit})`, 'left', '2px');
+  }
+  if (t < LEN) { g.fillStyle = 'rgba(255,255,255,0.25)'; g.fillRect(xAt(t), 260, 1, SY + 60 - 260); }
+
+  // Words.
+  const kick = ramp(0.8, 2, t) * (1 - ramp(25.5, 26.5, t));
+  text('96 BPM  ·  D DORIAN  ·  SIX-VOICE ROUND', X0, 110, '400 15px "Space Mono", "Courier New", monospace', `rgba(176,176,176,${kick})`, 'left', '4.5px');
+  text(`BAR ${String(bar + 1).padStart(2, '0')}  ·  ${SECTIONS[bar]}`, X0 + XW, 110, '400 15px "Space Mono", "Courier New", monospace', `rgba(176,176,176,${kick})`, 'right', '4.5px');
+  const line = ease(ramp(26, 27.4, t));
+  if (line > 0) {
+    g.save(); g.globalAlpha = line; g.translate(0, 18 * (1 - line));
+    g.font = 'italic 300 64px Fraunces, Georgia, serif'; g.textAlign = 'left';
+    const a = 'Everyone gets the same sun, just ', b = 'not at once.', wa = g.measureText(a).width, wb = g.measureText(b).width, x = SW / 2 - (wa + wb) / 2;
+    g.fillStyle = '#FFFFFF'; g.fillText(a, x, 140);
+    const grad = g.createLinearGradient(x + wa, 0, x + wa + wb, 0);
+    grad.addColorStop(0, PAL[2]); grad.addColorStop(0.55, PAL[3]); grad.addColorStop(1, PAL[5]);
+    g.fillStyle = grad; g.fillText(b, x + wa, 140); g.restore(); g.globalAlpha = open;
+  }
+  text('jean-paul', X0, SH - 30, 'italic 400 26px Fraunces, Georgia, serif', `rgba(255,255,255,${ramp(27, 28.5, t)})`);
+  text(playing ? '' : 'CLICK TO PLAY WITH SOUND', X0 + XW, SH - 34, '400 12px "Space Mono", "Courier New", monospace',
+    `rgba(176,176,176,${0.8 * Math.max(ramp(1, 2, t) * (1 - ramp(6, 7, t)), ramp(29, 30, t))})`, 'right', '3.5px');
+  PAL.forEach((c, i) => { g.fillStyle = c; g.fillRect(i * SW / 6, SH - 6, SW / 6 + 1, 6); });
+  g.restore();
+}
+
+// Time comes from the audio when it is playing, so picture and sound stay locked.
+let t0 = performance.now(), fixed = null, playing = false;
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) t0 -= LEN * 1000;
+window.renderAt = t => { fixed = t; frame(t); };
+addEventListener('resize', fit);
+cv.addEventListener('click', () => {
+  track.currentTime = 0; t0 = performance.now();
+  track.play().then(() => { playing = true; }).catch(() => { playing = false; });
+});
+track.addEventListener('ended', () => { playing = false; });
+fit();
+Promise.all(['italic 300 64px Fraunces', 'italic 400 26px Fraunces', '15px "Space Mono"']
+  .map(f => document.fonts.load(f))).catch(() => {}).then(() => { t0 = performance.now(); });
+(function loop(now) {
+  const t = fixed ?? (playing ? track.currentTime : Math.min(LEN, (now - t0) / 1000));
+  frame(t); requestAnimationFrame(loop);
+})(performance.now());
+</script>
