@@ -1,4 +1,4 @@
-# Synthesises dawn-set.m4a from score.json (window.SCORE exported from dawn-set.html).
+# Synthesises dawn-set.mp3 from score.json (window.SCORE exported from dawn-set.html).
 import json, numpy as np, wave
 SR=44100; T=31; N=SR*T
 rng=np.random.default_rng(7)
