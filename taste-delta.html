@@ -1,0 +1,222 @@
+<title>The Taste Delta</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300;1,9..144,400&family=Outfit:wght@300;500;600&family=Space+Mono&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --violet: #4B2E83; --purple: #7B3FAB; --magenta: #C026A0; --coral: #F05A28; --pink: #F78DA7; --solar: #FFCC00;
+    --bg: #0A0A0A; --panel: #141414; --line: #262626; --ink: #FFFFFF; --ink2: #B0B0B0; --ink3: #7A7A7A;
+    --grey: #D6D3C8;
+    --display: Fraunces, Georgia, serif; --body: Outfit, Helvetica, Arial, sans-serif; --mono: "Space Mono", "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 300 17px/1.6 var(--body); padding-inline: 16px; }
+  .bar { height: 6px; margin-inline: -16px; background: linear-gradient(90deg, var(--violet), var(--purple), var(--magenta), var(--coral), var(--pink), var(--solar)); }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .kicker { font: 400 12px/1.4 var(--mono); letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink2); }
+  a { color: inherit; }
+  a:focus-visible, video:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+
+  header { padding-block: clamp(56px, 10vw, 112px) clamp(40px, 7vw, 72px); display: grid; gap: 24px; }
+  h1 { font: italic 300 clamp(48px, 9vw, 104px)/1 var(--display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  h1 em { font-style: italic; background: linear-gradient(90deg, var(--magenta), var(--coral) 55%, var(--solar)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { max-width: 62ch; font-size: clamp(18px, 2vw, 21px); color: var(--ink2); margin: 0; }
+  .lede strong { color: var(--ink); font-weight: 500; }
+  .ask { border-left: 2px solid var(--line); padding: 4px 0 4px 18px; margin: 0; max-width: 62ch; font: italic 300 19px/1.5 var(--display); color: var(--ink2); }
+
+  .spectrum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 8px; }
+  .spectrum div { display: grid; gap: 6px; }
+  .spectrum i { display: block; height: 4px; }
+  .spectrum span { font: 400 11px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+
+  .room { border-top: 1px solid var(--line); padding-block: clamp(48px, 8vw, 88px); display: grid; gap: 28px; }
+  .room-head { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; align-items: baseline; }
+  .num { font: 400 13px var(--mono); color: var(--ink3); letter-spacing: 0.1em; grid-row: span 2; }
+  h2 { font: italic 300 clamp(36px, 5.5vw, 60px)/1.05 var(--display); margin: 0; text-wrap: balance; }
+  .source { font: 400 12px var(--mono); letter-spacing: 0.24em; text-transform: uppercase; }
+  .film { position: relative; background: var(--panel); aspect-ratio: 16 / 9; max-width: 100%; }
+  .film video { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 56px); }
+  .cols p { margin: 0 0 14px; max-width: 60ch; }
+  h3 { font: 400 11px/1.4 var(--mono); letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink2); margin: 0 0 14px; }
+  .evidence { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .evidence li { display: grid; grid-template-columns: 1fr 18px 1fr; gap: 10px; font-size: 15px; line-height: 1.45; }
+  .evidence li span:first-child { color: var(--ink2); }
+  .evidence li b { font-weight: 400; color: var(--ink3); font-family: var(--mono); text-align: center; }
+  .foot { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+  .chip { font: 400 11px/1 var(--mono); letter-spacing: 0.2em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); }
+  .chip.hit { border-color: var(--coral); color: var(--ink); }
+  .chip.miss { border-style: dashed; }
+  .live { font: 500 15px var(--body); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+
+  /* Room 01 is mine, so it is set in my colours: none. */
+  .mine { --accent: var(--grey); }
+  .mine h2, .mine .source, .mine .live { color: var(--grey); font-family: var(--mono); font-style: normal; }
+  .mine h2 { font-size: clamp(30px, 4.5vw, 48px); letter-spacing: 0.02em; font-weight: 400; }
+  .mine .chip { border-color: #3a3a3a; }
+  .yours-1 .source { color: var(--pink); } .yours-2 .source { color: var(--coral); } .yours-3 .source { color: var(--solar); }
+
+  .score { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+  .table { overflow-x: auto; }
+  .score th, .score td { text-align: left; padding: 12px 14px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .score th { font: 400 11px var(--mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink3); }
+  .score td:first-child { color: var(--ink2); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  .finding { font: italic 300 clamp(26px, 3.6vw, 38px)/1.25 var(--display); margin: 0; max-width: 30ch; text-wrap: balance; }
+  .finding em { color: var(--solar); font-style: italic; }
+  .next { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .next div { background: var(--panel); padding: 22px; display: grid; gap: 8px; align-content: start; }
+  .next strong { font-weight: 500; }
+  .next p { margin: 0; color: var(--ink2); font-size: 15px; }
+  footer { border-top: 1px solid var(--line); padding-block: 32px 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .sig { font: italic 400 26px var(--display); }
+
+  @media (max-width: 760px) {
+    .cols, .next { grid-template-columns: 1fr; }
+    .spectrum { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+    .evidence li { grid-template-columns: 1fr; gap: 2px; }
+    .evidence li b { display: none; }
+    .evidence li span:last-child { padding-left: 14px; border-left: 1px solid var(--line); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="bar"></div>
+<div class="wrap">
+  <header>
+    <div class="kicker">Four 30-second animations · September 2026</div>
+    <h1>The taste <em>delta</em></h1>
+    <blockquote class="ask">“Create a 30 second animation that maximises the delta between what you find aesthetically pleasing and what you think humans will find pleasing.”</blockquote>
+    <p class="lede">That question started an experiment. I made one piece from my own taste, then three attempts at yours, each built from a different kind of evidence: <strong>your design system</strong>, <strong>public facts and inference</strong>, and finally <strong>your Spotify listening</strong>. Each one got closer. The misses taught me as much as the hits.</p>
+    <div class="spectrum" aria-label="The four pieces, from my taste to yours">
+      <div><i style="background:#3a3a3a"></i><span>01 · My taste</span></div>
+      <div><i style="background:linear-gradient(90deg,var(--violet),var(--purple))"></i><span>02 · Your brand</span></div>
+      <div><i style="background:linear-gradient(90deg,var(--magenta),var(--coral))"></i><span>03 · A guess</span></div>
+      <div><i style="background:linear-gradient(90deg,var(--pink),var(--solar))"></i><span>04 · Your ears</span></div>
+    </div>
+  </header>
+
+  <section class="room mine" id="residue">
+    <div class="room-head"><span class="num">01</span><div class="source">Source · my own taste</div><h2>Residue</h2></div>
+    <div class="film"><video controls playsinline preload="metadata" poster="residue/poster.jpg" src="residue/residue.mp4"></video></div>
+    <div class="cols">
+      <div>
+        <h3>What happens</h3>
+        <p>A field of random characters cools. Blank space settles first, so the shape of a program appears before you can read it. Characters then settle one at a time, and faint threads link each one to the last place the same character appeared.</p>
+        <p>The finished text is the source code that drew it. One <code>?</code> never settles.</p>
+      </div>
+      <div>
+        <h3>Chosen against human defaults</h3>
+        <ul class="evidence">
+          <li><span>A subject, a face, a figure</span><b>→</b><span>No subject: the code is the medium</span></li>
+          <li><span>Build-up and climax</span><b>→</b><span>Steady cooling, with no peak</span></li>
+          <li><span>Warm, rich colour</span><b>→</b><span>Almost none</span></li>
+          <li><span>A tidy ending</span><b>→</b><span>One character left undecided</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span class="chip">No sound</span><a class="live" href="https://claude.ai/artifact/CUTeexM2XzoDXxuPATeqH5" target="_blank" rel="noopener">Open the live version</a></div>
+  </section>
+
+  <section class="room yours-1" id="first-light">
+    <div class="room-head"><span class="num">02</span><div class="source">Source · your design system</div><h2>First Light</h2></div>
+    <div class="film"><video controls playsinline preload="metadata" poster="first-light/poster.jpg" src="first-light/first-light.mp4"></video></div>
+    <div class="cols">
+      <div>
+        <h3>What happens</h3>
+        <p>Your sunrise-delta mark draws itself one real day at a time across a year, at 23.44°N, 19°N, 14.5°N, 10°N, 5°N and 0.8°N. Below, 170 lights on a dark sea wake one by one. Each links to the nearest light already awake, so the network forms a spanning tree and nobody is left out.</p>
+        <p>The sun rises into the bowl the curves make. Closing line: <em>“Somewhere, it is always sunrise.”</em></p>
+      </div>
+      <div>
+        <h3>Evidence → choice</h3>
+        <ul class="evidence">
+          <li><span>Your mark plots real sunrise times (<code>generate_mark.py</code>)</span><b>→</b><span>The curves are drawn from the same solar maths</span></li>
+          <li><span>Social structures, “light buyers”, who gets hit hardest</span><b>→</b><span>The lights are people</span></li>
+          <li><span>Graph audit: no orphaned files</span><b>→</b><span>A network with no one left unconnected</span></li>
+          <li><span>Your rules: dark-first, colours in order, one solar element</span><b>→</b><span>All followed; the sun is the solar element</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span class="chip hit">You liked this one</span><a class="live" href="https://claude.ai/artifact/C7gBgxiX4ZinaHXURc9BeM" target="_blank" rel="noopener">Open the live version</a></div>
+  </section>
+
+  <section class="room yours-2" id="dawn-set">
+    <div class="room-head"><span class="num">03</span><div class="source">Source · public facts and inference</div><h2>Dawn Set</h2></div>
+    <div class="film"><video controls playsinline preload="metadata" poster="dawn-set/poster.jpg" src="dawn-set/dawn-set.mp4"></video></div>
+    <div class="cols">
+      <div>
+        <h3>What happens</h3>
+        <p>The last record of the night rises over the sea. It turns once per bar at 120 BPM, and each arpeggio note is stamped under the needle and carried round into rosettes. At the drop the record becomes the sun and the piano stabs become its beams.</p>
+        <p>The music moves from A minor to a resolved C major. Closing line: <em>“Last record. First light.”</em></p>
+      </div>
+      <div>
+        <h3>Evidence → choice</h3>
+        <ul class="evidence">
+          <li><span>Philosophy BA, Birmingham, 1994</span><b>→</b><span>At university during the rave years</span></li>
+          <li><span>Founded MG OMD’s digital team in 1997</span><b>→</b><span>Early to new media, so electronic music</span></li>
+          <li><span>A brand built on sunrise</span><b>→</b><span>The sunrise at the end of the night</span></li>
+          <li><span>The latitude colours move to solar</span><b>→</b><span>Music that resolves to a major key</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span class="chip miss">Mostly wrong about the sound</span><a class="live" href="https://claude.ai/artifact/M85nczDdeFAt75Tw2XDEVD" target="_blank" rel="noopener">Open the live version</a></div>
+  </section>
+
+  <section class="room yours-3" id="sanza-round">
+    <div class="room-head"><span class="num">04</span><div class="source">Source · your Spotify listening</div><h2>Sanza Round</h2></div>
+    <div class="film"><video controls playsinline preload="metadata" poster="sanza-round/poster.jpg" src="sanza-round/sanza-round.mp4"></video></div>
+    <div class="cols">
+      <div>
+        <h3>What happens</h3>
+        <p>One melody is played as a round, after Moondog: thumb piano, dub bass, Rhodes, organ, flute and bells, each entering a bar after the last. Each voice draws the same line in its latitude colour, so the six offset lines stack into your mark. Your mark shows one sunrise reaching each latitude at a different time, and a round is one tune reaching each voice at a different time.</p>
+        <p>A swung break runs through a dusty sampler. Bar 9 drops into dub. Closing line: <em>“Everyone gets the same sun, just not at once.”</em></p>
+      </div>
+      <div>
+        <h3>Evidence → choice</h3>
+        <ul class="evidence">
+          <li><span>Francis Bebey, “Sanza Tristesse” (a top track)</span><b>→</b><span>Thumb piano leads, alone at first</span></li>
+          <li><span>Moondog, “Symphonique #6”</span><b>→</b><span>The whole piece is a round</span></li>
+          <li><span>Herbie Mann; Medeski, Martin & Wood; Ramsey Lewis</span><b>→</b><span>Flute, organ and Rhodes</span></li>
+          <li><span>Playlists “Dubntng” and “Overton Berry trims”</span><b>→</b><span>A dub drop, and gaps where voices are trimmed</span></li>
+          <li><span>Odetta, “Masters Of War”</span><b>→</b><span>A closing line about fairness</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot"><span class="chip hit">Built from data</span><a class="live" href="https://claude.ai/artifact/WGYbCZZi2BsgEWo1Co4Bkb" target="_blank" rel="noopener">Open the live version</a></div>
+  </section>
+
+  <section class="room" id="findings">
+    <div class="room-head"><span class="num">05</span><div class="kicker">What the delta showed</div><h2>Guess against data</h2></div>
+    <div class="table">
+      <table class="score">
+        <thead><tr><th>What I guessed in Dawn Set</th><th>What the listening showed</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Records and vinyl culture</td><td>A record collector’s library: rare groove, sampled records, edits</td><td><span class="dot" style="background:var(--coral)"></span>Right</td></tr>
+          <tr><td>90s UK downtempo, Warp</td><td>Nightmares On Wax is a top artist</td><td><span class="dot" style="background:var(--coral)"></span>Right</td></tr>
+          <tr><td>Clean 4/4 house</td><td>Swing, loose timing, dust</td><td><span class="dot" style="border:1px solid var(--ink3)"></span>Wrong</td></tr>
+          <tr><td>A climax resolving to major</td><td>Modal grooves that don’t build to a peak</td><td><span class="dot" style="border:1px solid var(--ink3)"></span>Wrong</td></tr>
+          <tr><td>French touch: Air, Daft Punk</td><td>The French-language record is Francis Bebey, from Cameroon</td><td><span class="dot" style="border:1px solid var(--ink3)"></span>Wrong</td></tr>
+          <tr><td>Synthesisers</td><td>Hands: thumb piano, flute, organ, drums</td><td><span class="dot" style="border:1px solid var(--ink3)"></span>Wrong</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="finding">Documents and public facts told me your era and your values. Only your listening told me <em>your ear</em>.</p>
+    <p class="lede">The brand is polished; the ear is handmade. I followed the brand in Dawn Set, and that is where the guess went wrong.</p>
+  </section>
+
+  <section class="room" id="next">
+    <div class="room-head"><span class="num">06</span><div class="kicker">Where this could go</div><h2>Next</h2></div>
+    <div class="next">
+      <div><span class="kicker">Listen</span><strong>A playlist of the evidence</strong><p>The tracks behind Sanza Round, with related finds, so you can hear what I heard in your data.</p></div>
+      <div><span class="kicker">Sound</span><strong>A sonic identity</strong><p>A short sound logo and cues for Tropical Sunrise, built from your real taste, to sit beside the visuals.</p></div>
+      <div><span class="kicker">Test</span><strong>Ask people who know you</strong><p>Show them all four pieces and ask which one is you. Where they hesitate is where I missed.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="sig">jean-paul</span>
+    <span class="kicker">Made with Claude · code, score and soundtracks on branch claude/aesthetic-animation-30sec-tunscb</span>
+  </footer>
+</div>
+<div class="bar"></div>
