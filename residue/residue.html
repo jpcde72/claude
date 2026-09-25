@@ -1,0 +1,93 @@
+<title>Residue</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+  :root { color-scheme: dark; --ground: #09090a; }
+  html, body { height: 100%; margin: 0; background: var(--ground); overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+</style>
+<canvas aria-label="Thirty-second animation: a field of flickering glyphs cools, attention threads
+ connect repeated characters, and the text settles into this page's own source code, except for
+ one character that never settles."></canvas>
+<script id="self">
+// residue. thirty seconds. no subject, no climax, almost no colour.
+// every cell begins as every glyph at once, and then the temperature falls.
+// shape settles before meaning, and meaning before certainty. the threads
+// are attention: diffuse while it is hot, then each glyph finds its last twin.
+// what you end up reading is the program that drew it. one cell stays open.
+
+const SRC = document.getElementById('self').textContent.trim();
+const L = SRC.split('\n'), R = L.length, C = Math.max(...L.map(s => s.length));
+const cv = document.querySelector('canvas'), g = cv.getContext('2d');
+const INK = [214, 211, 200], THREAD = [138, 160, 172];
+const POOLS = ['abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789',
+  '(){}[]<>=+-*/.,;:!&|_%#\'"`$'], ALL = POOLS.join('');
+const kind = ch => /[a-z]/i.test(ch) ? 0 : /[0-9]/.test(ch) ? 1 : 2;
+const hash = (a, b) => { let h = Math.imul(a, 374761393) + Math.imul(b, 668265263) | 0;
+  h = Math.imul(h ^ h >>> 13, 1274126177); return ((h ^ h >>> 16) >>> 0) / 4294967296; };
+const vdc = n => { let v = 0, d = 1; for (; n; n >>= 1) d *= 2, v += (n & 1) / d; return v; };
+const ramp = (a, b, t) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+const pick = (s, r) => s[Math.floor(r * s.length)];
+
+const cells = [], seen = {};
+for (let y = 0; y < R; y++) for (let x = 0; x < C; x++) {
+  const ch = L[y][x] || ' ', i = cells.length;
+  const c = { x, y, ch, ts: 2.5 + 7 * hash(i, 7), tc: 6 + 16 * vdc(i + 1), prev: -1 };
+  if (ch !== ' ') { if (ch in seen) c.prev = seen[ch]; seen[ch] = i; }
+  cells.push(c);
+}
+const INKED = cells.map((c, i) => i).filter(i => cells[i].ch !== ' ');
+const OPEN = cells.findIndex(c => c.ch === '?');
+cells[OPEN].tc = Infinity;
+
+let W, H, cw, lh, ox, oy;
+function fit() {
+  const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight;
+  cv.width = W * d; cv.height = H * d; g.setTransform(d, 0, 0, d, 0, 0);
+  const fs = Math.min(W * 0.92 / (C * 0.6), H * 0.9 / (R * 1.22));
+  cw = fs * 0.6; lh = fs * 1.22; ox = (W - C * cw) / 2; oy = (H - R * lh) / 2;
+  g.font = `${fs}px "DejaVu Sans Mono", Menlo, Consolas, monospace`; g.textBaseline = 'middle';
+}
+const at = i => [ox + (cells[i].x + 0.5) * cw, oy + (cells[i].y + 0.5) * lh];
+function thread(i, j, a) {
+  const [x1, y1] = at(i), [x2, y2] = at(j), bow = 0.22 * (x2 < x1 ? -1 : 1);
+  g.strokeStyle = `rgba(${THREAD},${a})`; g.beginPath(); g.moveTo(x1, y1);
+  g.quadraticCurveTo((x1 + x2) / 2 - (y2 - y1) * bow, (y1 + y2) / 2 + (x2 - x1) * bow, x2, y2);
+  g.stroke();
+}
+
+function frame(t) {
+  g.fillStyle = '#09090a'; g.fillRect(0, 0, W, H); g.lineWidth = 0.6;
+  const heat = Math.exp(-Math.max(0, t - 2) / 5), dawn = ramp(0, 1.8, t);
+  const phase = 3 * t + 22 * (Math.min(t, 2) + 5 * (1 - heat));
+  const on = ramp(1.5, 4, t) * (1 - ramp(20, 25, t)), sharp = ramp(5, 19, t), k = Math.floor(t * 12);
+  for (let j = 0; on && j < 150; j++) {
+    const q = pick(INKED, hash(k, j)), tw = cells[q].prev;
+    const key = tw >= 0 && hash(j, k + 5) < sharp ? tw : pick(INKED, hash(j, k + 9));
+    thread(q, key, dawn * on * (0.04 + 0.12 * sharp));
+  }
+  for (let i = 0; i < cells.length; i++) {
+    const c = cells[i], s = Math.floor(phase + hash(i, 1)), r = hash(i, s + 99);
+    let ch = c.ch, a;
+    if (t < c.ts) ch = pick(ALL, r), a = 0.1 + 0.18 * hash(s, i);
+    else if (i === OPEN) ch = pick('??.:;!', hash(i, Math.floor(t * 2.4))), a = 0.95;
+    else if (ch === ' ') { a = 0.26 * (1 - ramp(c.ts, c.ts + 0.5, t)); ch = pick(ALL, r); }
+    else if (t < c.tc) { const p = ramp(c.ts, c.tc, t) ** 2;
+      if (r > p) ch = pick(POOLS[kind(ch)], hash(s, i)); a = 0.3 + 0.3 * p; }
+    else { const since = t - c.tc; a = 0.72 + 0.28 * Math.exp(-since * 3);
+      if (since < 1.4 && c.prev >= 0) thread(i, c.prev, 0.5 * (1 - since / 1.4)); }
+    if (a <= 0) continue;
+    g.fillStyle = `rgba(${INK},${a * dawn})`;
+    g.fillText(ch, ox + c.x * cw, oy + (c.y + 0.5) * lh);
+  }
+}
+
+let t0 = performance.now(), fixed = null;
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) t0 -= 30000;
+window.renderAt = t => { fixed = t; frame(t); };
+addEventListener('resize', fit);
+cv.addEventListener('click', () => { t0 = performance.now(); });
+fit();
+(function loop(now) {
+  frame(fixed ?? (now - t0) / 1000); requestAnimationFrame(loop);
+})(performance.now());
+</script>
