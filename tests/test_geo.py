@@ -124,3 +124,16 @@ def test_system_prompt_caches_stable_prefix():
     assert "<knowledge_model>" in blocks[0]["text"] and "X" not in blocks[0]["text"].split("</playbook>")[-1]
     assert "<brand_project>" in blocks[1]["text"]
     assert geo_llm.system_blocks(geo_llm.AskRequest("q"))[0]["text"] == blocks[0]["text"]
+
+
+def test_web_search_is_on_by_default(client, monkeypatch):
+    assert 'id="ask-web" checked' in client.get("/geo").text
+    seen = {}
+
+    async def fake_stream(req):
+        seen["web"] = req.web_search
+        yield {"type": "final", "answer": "ok", "model": "test-model"}
+
+    monkeypatch.setattr(geo_llm, "stream_answer", fake_stream)
+    client.post("/geo/ask", json={"question": "Latest on Muse?"})
+    assert seen["web"] is True

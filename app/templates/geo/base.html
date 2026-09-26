@@ -68,7 +68,7 @@
           <option value="{{ p.id }}" {{ 'selected' if project is defined and project and project.id == p.id }}>{{ p.name }}</option>
           {% endfor %}
         </select>
-        <label class="check"><input type="checkbox" id="ask-web"> Web search</label>
+        <label class="check"><input type="checkbox" id="ask-web" checked> Web search</label>
       </div>
       <div class="ctx-assets" id="ask-assets" aria-label="Include assets as context"></div>
       <div class="target-note hidden" id="ask-target"></div>

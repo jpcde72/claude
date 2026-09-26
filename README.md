@@ -33,7 +33,7 @@ Tests: `pytest -q`.
 - **2027 outlook** and **Playbook**: the long-form research, rendered.
 - **Brand projects**: a brief, an ARI v2 scorer with a live index, and starter kits that generate a readiness brief, 2027 plan, probe set, Muse memo, mandate strategy or access audit.
 - **Assets**: markdown documents with full version history. Edit, restore any version, export a project as `.md`, or **Refresh with Claude** to save an updated version.
-- **Ask Claude drawer** (every page): streams answers grounded in the knowledge model, the project brief and any assets you tick. It has an optional **web search** toggle, keeps follow-up context within a thread, and **saves** any answer as a new asset or as the next version of an existing one. Server-side refusal fallbacks are enabled (`fallbacks: "default"`).
+- **Ask Claude drawer** (every page): streams answers grounded in the knowledge model, the project brief and any assets you tick. **Web search** is on by default (switch it off for faster, model-only answers; the choice is remembered per browser). It keeps follow-up context within a thread, and **saves** any answer as a new asset or as the next version of an existing one. Server-side refusal fallbacks are enabled (`fallbacks: "default"`).
 - **Visual systems**: a **JP | OM** toggle in the header switches between the JP Meridian (Tropical) system and the Omnicom Media system. The choice is remembered per browser.
 
 ## Skills

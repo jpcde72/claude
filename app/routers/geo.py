@@ -278,7 +278,7 @@ class AskBody(BaseModel):
     project_id: int | None = None
     asset_ids: list[int] = []
     history_ids: list[int] = []
-    web_search: bool = False
+    web_search: bool = True
 
 
 def _sse(event: dict) -> str:

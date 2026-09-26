@@ -74,6 +74,16 @@
   }
   projectSel.addEventListener("change", () => { setTarget(null); loadAssets(); });
 
+  // Web search defaults on; remember the viewer's choice if they switch it off.
+  const webToggle = $("#ask-web");
+  try {
+    const saved = localStorage.getItem("geo_web_search");
+    if (saved !== null) webToggle.checked = saved === "1";
+  } catch (e) {}
+  webToggle.addEventListener("change", () => {
+    try { localStorage.setItem("geo_web_search", webToggle.checked ? "1" : "0"); } catch (e) {}
+  });
+
   /** Public entry point used by buttons across the app. */
   window.GEO = {
     openAsk(opts = {}) {
