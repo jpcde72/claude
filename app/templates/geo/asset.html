@@ -1,0 +1,64 @@
+{% extends "geo/base.html" %}
+{% block title %}{{ asset.title }} · GEO Studio{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="/geo">Projects</a> / <a href="/geo/projects/{{ project.id }}">{{ project.name }}</a> / {{ asset.title }}</div>
+<div class="section-head">
+  <div>
+    <div class="chips" style="margin-bottom:8px">
+      <span class="chip accent">{{ asset.kind_label }}</span>
+      <span class="chip">v{{ shown.version if shown else 0 }}{{ ' of ' ~ asset.current.version if shown and asset.current and shown.version != asset.current.version }}</span>
+      {% if shown %}<span class="chip">{{ shown.source }}</span>{% endif %}
+      {% if asset.tags %}<span class="chip">{{ asset.tags }}</span>{% endif %}
+    </div>
+    <h1 style="font-size:clamp(1.7rem,3.2vw,2.5rem);margin:0">{{ asset.title }}</h1>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" type="button" data-ask data-ask-project="{{ project.id }}" data-ask-assets="{{ asset.id }}" data-ask-target="{{ asset.id }}" data-ask-target-title="{{ asset.title }}" data-ask-q="Update this asset ('{{ asset.title }}') with the latest knowledge model. Keep its structure, change what is outdated, mark changes with (updated), and return the full revised markdown only.">Refresh with Claude</button>
+    <button class="btn" type="button" data-ask data-ask-project="{{ project.id }}" data-ask-assets="{{ asset.id }}" data-ask-q="Critique this asset ('{{ asset.title }}'): what is weak, missing or unsupported by evidence, and what would a sceptical CMO ask?">Critique</button>
+    <a class="btn" href="#edit" onclick="document.getElementById('edit').open=true">Edit</a>
+  </div>
+</div>
+
+<div class="aside-layout" style="grid-template-columns:minmax(0,1fr) 280px;margin-top:20px">
+  <div>
+    {% if shown and asset.current and shown.version != asset.current.version %}
+    <div class="card" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <span>You are viewing <b>v{{ shown.version }}</b>. The current version is v{{ asset.current.version }}.</span>
+      <form method="post" action="/geo/assets/{{ asset.id }}/restore/{{ shown.version }}"><button class="btn small primary" type="submit">Restore as v{{ asset.current.version + 1 }}</button></form>
+    </div>
+    {% endif %}
+    <article class="card prose wide">{{ (shown.content if shown else '')|md }}</article>
+
+    <details class="card" id="edit" style="margin-top:16px">
+      <summary style="cursor:pointer"><span class="label">Edit, which saves a new version</span></summary>
+      <form method="post" action="/geo/assets/{{ asset.id }}/versions" style="margin-top:14px">
+        <div class="grid-2">
+          <label class="field"><span class="label">Title</span><input type="text" name="title" value="{{ asset.title }}"></label>
+          <label class="field"><span class="label">Kind</span>
+            <select name="kind">{% for k, label in ASSET_KINDS.items() %}<option value="{{ k }}" {{ 'selected' if k == asset.kind }}>{{ label }}</option>{% endfor %}</select>
+          </label>
+        </div>
+        <label class="field"><span class="label">Tags</span><input type="text" name="tags" value="{{ asset.tags or '' }}"></label>
+        <label class="field"><span class="label">Content (markdown)</span><textarea class="code" name="content">{{ asset.current.content if asset.current else '' }}</textarea></label>
+        <label class="field"><span class="label">Change note</span><input type="text" name="change_note" placeholder="What changed and why"></label>
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" type="submit">Save v{{ (asset.current.version if asset.current else 0) + 1 }}</button>
+          <button class="btn danger" type="submit" formaction="/geo/assets/{{ asset.id }}/delete" onclick="return confirm('Delete this asset and its history?')">Delete asset</button>
+        </div>
+      </form>
+    </details>
+  </div>
+
+  <aside class="card" style="position:sticky;top:84px">
+    <div class="label">Version history</div>
+    <div class="versions" style="margin-top:8px">
+      {% for ver in asset.versions %}
+      <a class="version {{ 'on' if shown and ver.version == shown.version }}" href="/geo/assets/{{ asset.id }}?v={{ ver.version }}">
+        <span class="v">v{{ ver.version }}</span>
+        <span><span class="note">{{ ver.change_note or 'Edited' }}</span><br><span class="when">{{ ver.source }} · {{ ver.created_at.strftime('%d %b %Y %H:%M') }}</span></span>
+      </a>
+      {% endfor %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

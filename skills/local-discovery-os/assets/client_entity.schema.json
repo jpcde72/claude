@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ldos.local/schemas/client_entity.schema.json",
+  "title": "LDOS Client Entity Record",
+  "description": "The canonical, validated replacement for a pasted business-context blob. Populated at Phase 1 and locked before any execution begins.",
+  "type": "object",
+  "required": ["schema_version", "tenant_id", "client_id", "legal_name", "sector_code", "market", "locations", "services", "consent_scope"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "tenant_id": { "type": "string" },
+    "client_id": { "type": "string" },
+    "legal_name": { "type": "string" },
+    "trading_name": { "type": "string" },
+    "sector_code": { "type": "string", "description": "Fixed taxonomy value. Required join key for all benchmarks." },
+    "market": { "type": "string", "description": "ISO 3166-1 alpha-2 plus optional region, e.g. GB-LND" },
+    "size_band": { "enum": ["solo", "2-10", "11-50", "50+"] },
+    "founded_date": { "type": "string", "format": "date" },
+    "avg_job_value": { "type": "number" },
+    "currency": { "type": "string" },
+    "lead_time_days": { "type": "number" },
+    "locations": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["location_id", "address_line", "locality", "country", "phone_e164", "is_service_area_business"],
+        "properties": {
+          "location_id": { "type": "string" },
+          "label": { "type": "string" },
+          "address_line": { "type": "array", "items": { "type": "string" } },
+          "locality": { "type": "string" },
+          "region": { "type": "string" },
+          "postcode": { "type": "string" },
+          "country": { "type": "string" },
+          "lat": { "type": "number" },
+          "lng": { "type": "number" },
+          "place_id": { "type": "string" },
+          "cid": { "type": "string" },
+          "phone_e164": { "type": "string", "pattern": "^\\+[1-9][0-9]{6,14}$" },
+          "is_service_area_business": { "type": "boolean" },
+          "storefront_visible": { "type": "boolean" },
+          "hours": { "type": "object", "description": "Canonical opening hours; single source of truth for all surfaces" },
+          "status": { "enum": ["active", "temporarily_closed", "closed"] },
+          "service_areas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "is_declared_on_profile", "is_evidenced"],
+              "properties": {
+                "area_id": { "type": "string" },
+                "type": { "enum": ["named_place", "polygon", "radius", "postcode_set"] },
+                "named_place": { "type": "string" },
+                "geometry": { "type": "object", "description": "GeoJSON" },
+                "travel_time_minutes": { "type": "number" },
+                "is_declared_on_profile": { "type": "boolean" },
+                "is_evidenced": { "type": "boolean" },
+                "evidence_refs": { "type": "array", "items": { "type": "string" } },
+                "priority_rank": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["service_id", "name", "canonical_name", "price_basis"],
+        "properties": {
+          "service_id": { "type": "string" },
+          "name": { "type": "string" },
+          "canonical_name": { "type": "string", "description": "Mapped to shared service taxonomy for cross-client comparison" },
+          "description": { "type": "string" },
+          "price_band_low": { "type": "number" },
+          "price_band_high": { "type": "number" },
+          "price_basis": { "enum": ["fixed", "hourly", "from", "quote_only"] },
+          "is_emergency": { "type": "boolean" },
+          "typical_duration_minutes": { "type": "number" },
+          "seasonality": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 12 } },
+          "margin_rank": { "type": "integer" },
+          "demand_rank": { "type": "integer" },
+          "is_primary": { "type": "boolean" },
+          "schema_org_type": { "type": "string" }
+        }
+      }
+    },
+    "credentials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "issuer", "is_machine_verifiable"],
+        "properties": {
+          "credential_id": { "type": "string" },
+          "type": { "enum": ["licence", "insurance", "certification", "membership", "award"] },
+          "issuer": { "type": "string" },
+          "identifier": { "type": "string" },
+          "valid_from": { "type": "string", "format": "date" },
+          "valid_to": { "type": "string", "format": "date" },
+          "verification_url": { "type": "string", "format": "uri" },
+          "is_machine_verifiable": { "type": "boolean" }
+        }
+      }
+    },
+    "competitors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "competitor_type"],
+        "properties": {
+          "competitor_id": { "type": "string" },
+          "name": { "type": "string" },
+          "competitor_type": { "enum": ["direct_local", "franchise", "national_aggregator", "marketplace", "platform_native"] },
+          "profile_urls": { "type": "array", "items": { "type": "string" } },
+          "website": { "type": "string" },
+          "first_seen_at": { "type": "string", "format": "date-time" },
+          "share_of_pack": { "type": "number" }
+        }
+      }
+    },
+    "keyword_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["query_string", "intent_class"],
+        "properties": {
+          "query_id": { "type": "string" },
+          "query_string": { "type": "string" },
+          "intent_class": { "enum": ["emergency", "research", "comparison", "transactional", "navigational"] },
+          "modifier_flags": { "type": "array", "items": { "enum": ["near_me", "city", "best", "cheap", "open_now", "brand"] } },
+          "volume_estimate": { "type": "number" },
+          "volume_source": { "type": "string" },
+          "difficulty_estimate": { "type": "number" },
+          "ai_answer_present": { "type": "boolean" },
+          "local_pack_present": { "type": "boolean" },
+          "observed_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "agent_interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "agent_accessible"],
+        "properties": {
+          "interface_id": { "type": "string" },
+          "type": { "enum": ["structured_data", "product_feed", "availability_feed", "booking_api", "quote_api", "mcp_server", "llms_txt", "knowledge_endpoint"] },
+          "url": { "type": "string" },
+          "format": { "type": "string" },
+          "auth_required": { "type": "boolean" },
+          "update_frequency": { "type": "string" },
+          "last_validated_at": { "type": "string", "format": "date-time" },
+          "validation_status": { "enum": ["valid", "invalid", "stale", "unknown"] },
+          "agent_accessible": { "type": "boolean" }
+        }
+      }
+    },
+    "consent_scope": {
+      "type": "object",
+      "required": ["benchmark_contribution", "publishing_authority", "competitor_naming_permitted"],
+      "properties": {
+        "properties_granted": { "type": "array", "items": { "type": "string" } },
+        "publishing_authority": { "enum": ["draft_only", "publish_with_approval", "publish_autonomous"], "default": "publish_with_approval" },
+        "benchmark_contribution": { "enum": ["none", "aggregated", "full"], "default": "aggregated" },
+        "competitor_naming_permitted": { "type": "boolean", "default": false },
+        "case_study_use": { "enum": ["named", "anonymised", "none"], "default": "anonymised" },
+        "retention_days": { "type": "integer", "default": 1095 }
+      }
+    },
+    "canonical_locked_at": { "type": "string", "format": "date-time" },
+    "field_confidence": { "type": "object", "description": "Per-field 0-1 confidence from Phase 1 entity resolution" }
+  }
+}

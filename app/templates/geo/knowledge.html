@@ -1,0 +1,201 @@
+{% extends "geo/base.html" %}
+{% block title %}Knowledge · GEO Studio{% endblock %}
+{% macro ask(q) -%}
+<button class="btn small ghost" type="button" data-ask data-ask-q="{{ q }}">Ask →</button>
+{%- endmacro %}
+{% block content %}
+<div class="label">Knowledge model v{{ kb.meta.version }} · as of {{ kb.meta.as_of }}</div>
+<h1 style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Navigate GEO and AXO</h1>
+<p class="muted" style="max-width:70ch">{{ kb.meta.summary }}</p>
+
+<div class="toolbar">
+  <input type="search" id="k-search" placeholder="Filter everything: Muse, mandate, UCP, W16, B2B…" aria-label="Filter knowledge">
+  <span class="label">Layer</span>
+  {% for l in kb.layers %}<button type="button" class="chip" data-layer="{{ l.id }}" aria-pressed="false">{{ l.name.replace(' layer','') }}</button>{% endfor %}
+</div>
+
+<div class="aside-layout">
+  <nav class="sidenav" aria-label="Sections">
+    <a href="#ladder">Layers and ladder</a>
+    <a href="#concepts">New thinking</a>
+    <a href="#workstreams">Workstreams</a>
+    <a href="#surfaces">Agent surfaces</a>
+    <a href="#protocols">Protocols</a>
+    <a href="#ari">ARI v2</a>
+    <a href="#predictions">Predictions</a>
+    <a href="#actions">Actions for 2027</a>
+    <a href="#metrics">New metrics</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <div>
+    <section class="k-section" id="ladder">
+      <div class="label">Structure</div>
+      <h2>Four layers × three arenas × five rungs</h2>
+      <div class="cards" style="margin-bottom:16px">
+        {% for l in kb.layers %}
+        <div class="card k-item" data-layer="{{ l.id }}">
+          <div class="head"><h3>{{ l.name }}</h3>{% if l.new_in %}<span class="chip new">new {{ l.new_in }}</span>{% endif %}</div>
+          <p><b style="color:var(--text)">{{ l.question }}</b></p>
+          <p class="meta"><b>Optimise for</b> {{ l.optimised_for }}</p>
+          <p class="meta"><b>Failure mode</b> {{ l.failure }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="ladder" style="margin-bottom:16px">
+        {% for r in kb.delegation_ladder %}
+        <div class="rung k-item">
+          <div class="code-id">{{ r.rung }}</div><h4>{{ r.name }}</h4><p>{{ r.description }}</p>
+          <p class="wins" style="font-size:.84rem">{{ r.what_wins }}</p>
+          <p class="faint" style="font-size:.78rem;margin-top:6px">{{ r.example }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="chips">{% for a in kb.arenas %}<span class="chip" title="{{ a.question }}">{{ a.name }}: {{ a.question }}</span>{% endfor %}</div>
+    </section>
+
+    <section class="k-section" id="concepts">
+      <div class="label">New thinking</div>
+      <h2>Ten ideas that update the model</h2>
+      <div class="cards">
+        {% for c in kb.concepts %}
+        <div class="card k-item">
+          <h3>{{ c.name }}</h3>
+          <p>{{ c.idea }}</p>
+          <div class="foot"><span></span>{{ ask("Explain '" ~ c.name ~ "' and what it means for my brand in practice, with two examples.") }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="k-section" id="workstreams">
+      <div class="label">Capabilities</div>
+      <h2>Workstreams W1–W20</h2>
+      <p class="muted">W1–W14 come from the Local Discovery OS. W15–W20 are the new agentic workstreams.</p>
+      <div class="cards">
+        {% for w in kb.workstreams %}
+        <div class="card k-item" data-layer="{{ w.layer }}">
+          <div class="head">
+            <div><span class="id">{{ w.id }}</span><h3>{{ w.name }}</h3></div>
+            {% if w.new_in %}<span class="chip new">new</span>{% endif %}
+          </div>
+          <div class="chips"><span class="chip">{{ w.layer }}</span><span class="chip">{{ w.arena }}</span></div>
+          <p>{{ w.summary }}</p>
+          {% if w.tasks %}
+          <details class="more"><summary>{{ w.tasks|length }} tasks · metrics · automation</summary>
+            <ul>{% for t in w.tasks %}<li>{{ t }}</li>{% endfor %}</ul>
+            <p class="meta" style="margin-top:8px"><b>Metrics</b> {{ w.metrics|join(', ') }}</p>
+            <p class="meta"><b>Automation</b> {{ w.automation }}</p>
+          </details>
+          {% endif %}
+          <div class="foot"><span class="faint" style="font-size:.78rem">{{ w.source or 'v2' }}</span>{{ ask("Run " ~ w.id ~ " (" ~ w.name ~ ") for my brand: what to check first, what good looks like, and the three cheapest moves.") }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="k-section" id="surfaces">
+      <div class="label">Landscape</div>
+      <h2>Agent surfaces</h2>
+      <div class="cards">
+        {% for s in kb.surfaces %}
+        <div class="card k-item">
+          <div class="head"><div><span class="id">{{ s.owner }}</span><h3>{{ s.name }}</h3></div><span class="chip">{{ s.segment }}</span></div>
+          {% if s.launched %}<span class="label">Launched {{ s.launched }}</span>{% endif %}
+          <p>{{ s.how_it_works }}</p>
+          <p class="meta"><b>Commerce</b> {{ s.commerce }}</p>
+          <p class="meta"><b>Reach</b> {{ s.reach }}</p>
+          <p class="meta"><b>Paid</b> {{ s.paid }}</p>
+          <p class="meta"><b>Brand levers</b> {{ s.brand_levers }}</p>
+          <div class="foot"><span></span>{{ ask("Write a surface memo: what " ~ s.name ~ " means for my brand, what to do in the next 90 days and how to measure it.") }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="k-section" id="protocols">
+      <div class="label">Rails</div>
+      <h2>Protocols and standards</h2>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Protocol</th><th>Owner</th><th>Layer of the transaction</th><th>Status</th><th>Brand action</th></tr></thead>
+          <tbody>
+          {% for p in kb.protocols %}
+          <tr class="k-item"><td style="color:var(--text);font-weight:600">{{ p.name }}</td><td>{{ p.owner }}</td><td>{{ p.layer }}</td><td>{{ p.status }}</td><td>{{ p.action }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="k-section" id="ari">
+      <div class="label">Scoring</div>
+      <h2>{{ kb.ari.name }}</h2>
+      <p class="muted">{{ kb.ari.note }}</p>
+      <div class="card">
+        {% for c in kb.ari.components %}
+        <div class="meter k-item">
+          <div class="name">{{ c.name }}<small>{{ c.measures }}</small></div>
+          <div class="track" role="img" aria-label="Weight {{ c.weight }}"><div class="fill" style="width:{{ c.weight * 4 }}%"></div></div>
+          <div class="val num">{{ c.weight }}</div>
+        </div>
+        {% endfor %}
+        <p class="faint" style="font-size:.8rem;margin:10px 0 0">Bar length shows each component's weight (the weights sum to 100). Bands: {% for b in kb.ari.bands %}{{ b.min }}–{{ b.max }} {{ b.label }}{{ ' · ' if not loop.last }}{% endfor %}.</p>
+      </div>
+    </section>
+
+    <section class="k-section" id="predictions">
+      <div class="label">Foresight</div>
+      <h2>Predictions to end-2027</h2>
+      <div class="cards">
+        {% for p in kb.predictions %}
+        <div class="card k-item">
+          <div class="head"><span class="id">{{ p.id }} · {{ p.horizon }}</span><span class="chip conf-{{ p.confidence }}">{{ p.confidence }}</span></div>
+          <p style="color:var(--text)">{{ p.statement }}</p>
+          <p class="meta"><b>Watch</b> {{ p.signals }}</p>
+          <p class="meta"><b>So what</b> {{ p.implication }}</p>
+          <div class="foot"><span></span>{{ ask("Stress-test prediction " ~ p.id ~ ": " ~ p.statement ~ " What evidence is there today, what would falsify it, and what should my brand do if it comes true?") }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="k-section" id="actions">
+      <div class="label">Do now, pays in 2027</div>
+      <h2>Ranked actions</h2>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>#</th><th>Action</th><th>When</th><th>Effort</th><th>Why it pays in 2027</th><th>Owner · KPI</th><th></th></tr></thead>
+          <tbody>
+          {% for a in kb.actions %}
+          <tr class="k-item">
+            <td class="num" style="color:var(--accent);font-weight:700">{{ a.id }}</td>
+            <td style="color:var(--text);font-weight:600">{{ a.name }}<div class="faint" style="font-size:.76rem;font-weight:400">{{ a.workstreams|join(' · ') }}</div></td>
+            <td>{{ a.horizon }}</td><td>{{ a.effort }}</td><td>{{ a.why_2027 }}</td>
+            <td>{{ a.owner }}<div class="faint" style="font-size:.78rem"><code>{{ a.kpi }}</code></div></td>
+            <td>{{ ask("Turn action " ~ a.id ~ " (" ~ a.name ~ ") into a 6-week plan for my brand with owners, milestones and a KPI target.") }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="k-section" id="metrics">
+      <div class="label">Measurement</div>
+      <h2>New metric keys</h2>
+      <div class="table-wrap"><table class="data"><tbody>
+        {% for m in kb.metrics_new %}<tr class="k-item"><td><code>{{ m.key }}</code></td><td>{{ m.definition }}</td></tr>{% endfor %}
+      </tbody></table></div>
+    </section>
+
+    <section class="k-section" id="sources">
+      <div class="label">Evidence</div>
+      <h2>Sources</h2>
+      <ul class="prose">
+        {% for s in kb.sources %}<li class="k-item"><a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.title }}</a></li>{% endfor %}
+      </ul>
+    </section>
+  </div>
+</div>
+{% endblock %}

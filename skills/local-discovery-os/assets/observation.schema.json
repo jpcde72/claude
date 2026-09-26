@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ldos.local/schemas/observation.schema.json",
+  "title": "LDOS Observation",
+  "description": "Atomic, append-only evidence record. Never mutated. A changed value is a new observation; the diff is the product.",
+  "type": "object",
+  "required": ["schema_version", "observation_id", "tenant_id", "subject_type", "subject_id", "metric_key", "observed_at", "method", "confidence"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "observation_id": { "type": "string" },
+    "tenant_id": { "type": "string" },
+    "client_id": { "type": "string" },
+    "subject_type": { "enum": ["client", "location", "entity_profile", "competitor", "web_page", "query", "surface", "agent_interface"] },
+    "subject_id": { "type": "string" },
+    "surface_id": { "type": "string" },
+    "metric_key": { "type": "string", "pattern": "^(entity|surface|protocol|geo|outcome)\\.[a-z_]+\\.[a-z_0-9]+(\\.[a-z_0-9]+)?$" },
+    "value_numeric": { "type": ["number", "null"] },
+    "value_text": { "type": ["string", "null"] },
+    "value_json": { "type": ["object", "array", "null"] },
+    "unit": { "type": "string" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "method": { "enum": ["manual", "browser_agent", "api", "tool_export", "model_inference"] },
+    "location_context": {
+      "type": "object",
+      "description": "MANDATORY for any query-based observation. Local results vary by point of origin; an observation without context is not evidence.",
+      "properties": {
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "named_locale": { "type": "string" },
+        "grid_point_id": { "type": "string" }
+      }
+    },
+    "device_context": { "enum": ["mobile", "desktop", "unknown"] },
+    "language": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "is_estimate": { "type": "boolean", "default": false },
+    "estimate_method": { "type": ["string", "null"], "description": "Required when is_estimate is true. Never launder an estimate into a fact." },
+    "raw_snapshot_ref": { "type": "string", "description": "Object-store key for the immutable raw capture" },
+    "collector_id": { "type": "string" },
+    "collector_run_id": { "type": "string" },
+    "completeness_ok": { "type": "boolean", "description": "False marks the run partial; excluded from benchmarks" },
+    "operator_id": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "is_estimate": { "const": true } }, "required": ["is_estimate"] },
+      "then": { "required": ["estimate_method"] }
+    }
+  ]
+}

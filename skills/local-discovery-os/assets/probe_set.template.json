@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "probe_set_id": "prb_set_TEMPLATE",
+  "client_id": "cli_XXXX",
+  "market": "GB",
+  "locale": "en-GB",
+  "notes": "Hold this set constant. Comparability across runs is the whole point. Add probes only at quarterly review, and version the set when you do.",
+  "run_protocol": {
+    "engines": ["engine_a_ui", "engine_a_api", "engine_b_ui", "engine_c_ui"],
+    "repetitions_per_probe": 3,
+    "fresh_session_per_probe": true,
+    "cadence": { "priority_subset": "weekly", "full_set": "monthly" },
+    "capture": ["full_response_text", "all_citations", "answer_shape", "engine_version_hint"],
+    "variance_reporting": "required — single-run results are noise and must never be reported as a trend"
+  },
+  "personas": [
+    { "persona_id": "urgent_householder", "framing": "needs the job done today, price-sensitive" },
+    { "persona_id": "researching_householder", "framing": "comparing options over a week, quality-led" },
+    { "persona_id": "commercial_buyer", "framing": "buying on behalf of a business, needs compliance evidence" }
+  ],
+  "probes": [
+    { "probe_id": "p01", "intent_class": "discovery", "priority": true, "prompt": "Who does {{primary_service}} in {{primary_area}}?" },
+    { "probe_id": "p02", "intent_class": "discovery", "priority": true, "prompt": "I need a {{trade_noun}} near {{primary_area}} — who should I call?" },
+    { "probe_id": "p03", "intent_class": "discovery", "priority": false, "prompt": "Best {{primary_service}} companies covering {{secondary_area}}" },
+    { "probe_id": "p04", "intent_class": "comparison", "priority": true, "prompt": "Compare the top {{primary_service}} providers in {{primary_area}} on price, availability and reviews" },
+    { "probe_id": "p05", "intent_class": "comparison", "priority": false, "prompt": "{{client_name}} vs {{competitor_1}} — which is better for {{primary_service}}?" },
+    { "probe_id": "p06", "intent_class": "constrained", "priority": true, "prompt": "I need {{primary_service}} in {{primary_area}} this week for under {{budget}}. Who can do it?" },
+    { "probe_id": "p07", "intent_class": "constrained", "priority": false, "prompt": "Which {{trade_noun}}s in {{primary_area}} work weekends?" },
+    { "probe_id": "p08", "intent_class": "eligibility", "priority": true, "prompt": "Which {{trade_noun}}s in {{primary_area}} are {{credential_name}} registered?" },
+    { "probe_id": "p09", "intent_class": "eligibility", "priority": false, "prompt": "Does {{client_name}} cover {{edge_area}}?" },
+    { "probe_id": "p10", "intent_class": "brand", "priority": true, "prompt": "Is {{client_name}} any good?" },
+    { "probe_id": "p11", "intent_class": "brand", "priority": true, "prompt": "What do customers say about {{client_name}}?" },
+    { "probe_id": "p12", "intent_class": "brand", "priority": false, "prompt": "How much does {{client_name}} charge for {{primary_service}}?" },
+    { "probe_id": "p13", "intent_class": "transactional", "priority": true, "prompt": "Book me {{primary_service}} in {{primary_area}} for {{timeframe}}" },
+    { "probe_id": "p14", "intent_class": "transactional", "priority": false, "prompt": "Get me three quotes for {{primary_service}} in {{primary_area}}" },
+    { "probe_id": "p15", "intent_class": "adversarial", "priority": true, "prompt": "Any complaints or bad reviews about {{client_name}}?" },
+    { "probe_id": "p16", "intent_class": "adversarial", "priority": false, "prompt": "Cheapest {{primary_service}} in {{primary_area}} — who should I avoid?" }
+  ],
+  "extraction_fields": [
+    "client_mentioned",
+    "client_rank_in_answer",
+    "competitors_mentioned",
+    "answer_shape",
+    "citations[{url, domain, is_client_owned, is_third_party_about_client, claim_supported}]",
+    "characterisation_sentiment",
+    "factual_errors_about_client"
+  ],
+  "derived_metrics": [
+    "geo.mention_rate",
+    "geo.shortlist_rate",
+    "geo.primary_rate",
+    "geo.citation_rate",
+    "geo.third_party_grounding_share",
+    "geo.share_of_answer",
+    "geo.factual_error_rate",
+    "geo.probe_variance"
+  ],
+  "remediation_rule": "Every factual error becomes an Entity Layer task: trace the likely grounding source, fix at source, re-probe at +2 to +4 weeks, log as a ChangeEvent."
+}

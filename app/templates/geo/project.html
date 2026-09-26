@@ -1,0 +1,149 @@
+{% extends "geo/base.html" %}
+{% block title %}{{ project.name }} · GEO Studio{% endblock %}
+{% set score = ari_score(project.ari) %}
+{% set kits = [
+  ("readiness_brief", "Agent readiness brief", "One page: ARI v2 read, top 3 cheapest moves, per-surface snapshot.",
+   "Write a one-page agent readiness brief for this brand: an ARI v2 read by component (use my scores if set, otherwise state assumptions and what evidence to gather), the three cheapest moves to raise it, and a per-surface snapshot for Muse, ChatGPT, Google AI Mode, Alexa, Siri and Copilot. Tag each move with layer, arena, rung and workstream."),
+  ("action_plan", "2027 action plan", "Tailor A1–A12 into a quarter-by-quarter plan.",
+   "Build this brand's 2027 GEO/AXO action plan: tailor actions A1–A12 to the brand and sector, rank them, and lay them out quarter by quarter from Q4 2026 to Q4 2027 with owner, KPI and target. Flag which predictions (P1–P12) each action hedges."),
+  ("probe_set", "Probe set", "40 fixed prompts across 10 intent classes and six surfaces.",
+   "Create a 40-prompt probe set for this brand covering the 7 LDOS intent classes plus delegated purchase, standing mandate and (if relevant) buyer-agent B2B. Include the run protocol, surfaces, repetitions and the extraction fields as a table."),
+  ("surface_memo", "Muse memo", "What Meta Muse means for this brand and the next 90 days.",
+   "Write a surface memo: what Meta Muse means for this brand, how Muse will discover, compare and buy in this category, what blocks the brand today, the 90-day plan, and how to measure progress."),
+  ("strategy", "Mandate strategy", "How to win and keep the default once people delegate.",
+   "Design the Mandate-layer strategy (W19) for this brand: map the mandate moments in the category, the structured standing options to offer, the reliability evidence agents will audit, and the switch signals to monitor."),
+  ("audit", "Agent access audit checklist", "W15 checklist tailored to the brand's stack.",
+   "Produce a W15 agent access and identity audit checklist tailored to this brand: CDN and WAF defaults, verified agents (Visa TAP, Mastercard Agent Pay, Web Bot Auth), crawler classes, analytics segmentation, and a draft agent policy. Give each check a pass criterion.")
+] %}
+{% block content %}
+<div class="crumbs"><a href="/geo">Projects</a> / {{ project.name }}</div>
+<div class="section-head" style="margin-bottom:8px">
+  <div>
+    <div class="chips" style="margin-bottom:8px">
+      <span class="chip">{{ project.segment }}</span>
+      {% if project.market %}<span class="chip">{{ project.market }}</span>{% endif %}
+      {% if project.sector %}<span class="chip">{{ project.sector }}</span>{% endif %}
+    </div>
+    <h1 style="font-size:clamp(1.9rem,3.6vw,2.8rem);margin:0">{{ project.name }}</h1>
+    {% if project.website %}<a href="{{ project.website }}" target="_blank" rel="noopener" style="font-size:.9rem">{{ project.website }}</a>{% endif %}
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" type="button" data-ask data-ask-project="{{ project.id }}">Ask about {{ project.name }}</button>
+    <a class="btn" href="/geo/projects/{{ project.id }}/export.md">Export .md</a>
+  </div>
+</div>
+
+<details class="card" style="margin:18px 0 8px">
+  <summary style="cursor:pointer"><span class="label">Brief</span> <span class="muted" style="font-size:.9rem">{{ (project.notes or 'No notes yet.')[:160] }}{{ '…' if project.notes and project.notes|length > 160 }} · Competitors: {{ project.competitors or 'not set' }}</span> <span style="color:var(--accent);font-size:.85rem">Edit</span></summary>
+  <form method="post" action="/geo/projects/{{ project.id }}" style="margin-top:16px">
+    <label class="field"><span class="label">Brand name</span><input type="text" name="name" value="{{ project.name }}" required></label>
+    <div class="grid-2">
+      <label class="field"><span class="label">Sector</span><input type="text" name="sector" value="{{ project.sector or '' }}"></label>
+      <label class="field"><span class="label">Market</span><input type="text" name="market" value="{{ project.market or '' }}"></label>
+    </div>
+    <div class="grid-2">
+      <label class="field"><span class="label">Segment</span>
+        <select name="segment">{% for s in ['consumer','b2b','both'] %}<option value="{{ s }}" {{ 'selected' if project.segment == s }}>{{ s }}</option>{% endfor %}</select>
+      </label>
+      <label class="field"><span class="label">Website</span><input type="url" name="website" value="{{ project.website or '' }}"></label>
+    </div>
+    <label class="field"><span class="label">Competitor set</span><input type="text" name="competitors" value="{{ project.competitors or '' }}"></label>
+    <label class="field"><span class="label">Brief and notes</span><textarea name="notes">{{ project.notes or '' }}</textarea></label>
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" type="submit">Save brief</button>
+      <button class="btn danger" type="submit" formaction="/geo/projects/{{ project.id }}/delete" onclick="return confirm('Delete this project and all its assets?')">Delete project</button>
+    </div>
+  </form>
+</details>
+
+<div class="two-col section" style="margin-top:24px">
+  <form class="card" id="ari" method="post" action="/geo/projects/{{ project.id }}/ari">
+    <div id="ari-form" data-bands='{{ kb.ari.bands|tojson }}'>
+      <div class="label">{{ kb.ari.name }}</div>
+      <div class="ari-total">
+        <span class="big" id="ari-big">{{ score if score is not none else '–' }}</span>
+        <span class="label" id="ari-band">{{ ari_band(score) }}</span>
+      </div>
+      <div class="bandbar" aria-hidden="true">{% for b in kb.ari.bands %}<div class="{{ 'on' if score is not none and b.min <= score <= b.max }}"></div>{% endfor %}</div>
+      <p class="faint" style="font-size:.8rem">Score each component 0–100 against the evidence. The index weights them as shown and appears once all seven are scored.</p>
+      {% for c in kb.ari.components %}
+      {% set v = project.ari.get(c.id) %}
+      <div class="meter">
+        <label class="name" for="r-{{ c.id }}">{{ c.name }} <small>weight {{ c.weight }} · {{ c.measures }}</small></label>
+        <input id="r-{{ c.id }}" type="range" min="0" max="100" step="5" name="{{ c.id }}" value="{{ v if v is not none else 50 }}" data-weight="{{ c.weight }}" data-touched="{{ '1' if v is not none else '0' }}">
+        <div class="val num" id="val-{{ c.id }}">{{ v if v is not none else '–' }}</div>
+      </div>
+      {% endfor %}
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn primary" type="submit">Save scores</button>
+        <button class="btn" type="button" data-ask data-ask-project="{{ project.id }}" data-ask-q="Challenge my ARI v2 scores for this brand component by component: which look too generous or too harsh, what evidence would confirm each, and which component moves the index fastest per unit of effort?">Challenge scores with Claude</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="card">
+    <div class="label">Starter kits</div>
+    <h3>Generate with Claude, then save as an asset</h3>
+    <div class="starter">
+      {% for kind, name, desc, q in kits %}
+      <button class="btn" type="button" data-ask data-ask-auto="1" data-ask-project="{{ project.id }}" data-ask-kind="{{ kind }}" data-ask-title="{{ name }}" data-ask-q="{{ q }}">
+        <span><b>{{ name }}</b><small>{{ desc }}</small></span>
+      </button>
+      {% endfor %}
+    </div>
+    <p class="faint" style="font-size:.8rem;margin:12px 0 0">Tick <b>Web search</b> in the drawer first for anything that needs the latest news.</p>
+  </div>
+</div>
+
+<section class="section" id="assets">
+  <div class="section-head">
+    <div><div class="label">Stored work</div><h2>Assets</h2></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      {% if project.assets %}
+        {% for a in project.assets %}
+        <div class="asset-row">
+          <div>
+            <a class="title" href="/geo/assets/{{ a.id }}">{{ a.title }}</a>
+            <div class="sub">{{ a.kind_label }} · v{{ a.current.version if a.current else 0 }} · {{ a.versions|length }} version{{ 's' if a.versions|length != 1 }} · {{ a.updated_at.strftime('%d %b %Y') }}{% if a.tags %} · {{ a.tags }}{% endif %}</div>
+          </div>
+          <button class="btn small ghost" type="button" data-ask data-ask-project="{{ project.id }}" data-ask-assets="{{ a.id }}" data-ask-target="{{ a.id }}" data-ask-target-title="{{ a.title }}" data-ask-q="Update this asset ('{{ a.title }}') with the latest knowledge model. Keep its structure, change what is outdated, mark changes with (updated), and return the full revised markdown only.">Refresh</button>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">No assets yet. Use a starter kit, save a Claude answer, or write one yourself.</div>
+      {% endif %}
+    </div>
+    <form class="card" method="post" action="/geo/projects/{{ project.id }}/assets">
+      <div class="label">Add manually</div>
+      <h3>New asset</h3>
+      <div class="grid-2">
+        <label class="field"><span class="label">Title</span><input type="text" name="title" required></label>
+        <label class="field"><span class="label">Kind</span>
+          <select name="kind">{% for k, label in ASSET_KINDS.items() %}<option value="{{ k }}" {{ 'selected' if k == 'note' }}>{{ label }}</option>{% endfor %}</select>
+        </label>
+      </div>
+      <label class="field"><span class="label">Tags</span><input type="text" name="tags" placeholder="e.g. muse, q4"></label>
+      <label class="field"><span class="label">Content (markdown)</span><textarea name="content" class="code" style="min-height:180px"></textarea></label>
+      <button class="btn primary" type="submit">Save asset</button>
+    </form>
+  </div>
+</section>
+
+<section class="section" id="history">
+  <div class="section-head"><div><div class="label">Conversation log</div><h2>Questions asked</h2></div></div>
+  {% if project.exchanges %}
+  <div class="card">
+    {% for ex in project.exchanges[:20] %}
+    <details class="asset-row" style="display:block">
+      <summary style="cursor:pointer;color:var(--text)">{{ ex.question[:180] }} <span class="sub">· {{ ex.created_at.strftime('%d %b %H:%M') }}{{ ' · web' if ex.web_search }}</span></summary>
+      <div class="prose" style="margin-top:12px">{{ ex.answer|md }}</div>
+    </details>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">Questions asked with this project selected appear here.</div>
+  {% endif %}
+</section>
+{% endblock %}

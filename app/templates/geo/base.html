@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-brand="{{ brand }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GEO Studio{% endblock %}</title>
+  <meta name="description" content="Navigate GEO and AXO strategy, ask Claude live questions, and keep versioned assets per brand project.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/static/geo/geo.css">
+  <script>
+    // Apply the saved brand before paint so there is no flash between systems.
+    try { var b = localStorage.getItem("geo_brand"); if (b === "jp" || b === "om") document.documentElement.dataset.brand = b; } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="rule"></div>
+    <div class="shell topbar-inner">
+      <a class="logo" href="/geo"><span class="dot"></span>GEO Studio <span class="sub"></span></a>
+      <nav class="nav" aria-label="Primary">
+        {% set section = section|default('') %}
+        <a href="/geo" class="{{ 'active' if section == 'dash' }}">Projects</a>
+        <a href="/geo/knowledge" class="{{ 'active' if section == 'kb' }}">Knowledge</a>
+        <a href="/geo/knowledge/outlook" class="{{ 'active' if section == 'outlook' }}">2027 outlook</a>
+        <a href="/geo/knowledge/playbook" class="{{ 'active' if section == 'playbook' }}">Playbook</a>
+      </nav>
+      <span class="spacer"></span>
+      <div class="brand-toggle" role="group" aria-label="Visual system">
+        <button type="button" data-brand-btn="jp" aria-pressed="{{ 'true' if brand == 'jp' else 'false' }}" title="JP Meridian">JP</button>
+        <button type="button" data-brand-btn="om" aria-pressed="{{ 'true' if brand == 'om' else 'false' }}" title="Omnicom Media">OM</button>
+      </div>
+    </div>
+    <nav class="nav-mobile" aria-label="Primary mobile">
+      <a href="/geo">Projects</a><a href="/geo/knowledge">Knowledge</a><a href="/geo/knowledge/outlook">2027 outlook</a><a href="/geo/knowledge/playbook">Playbook</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="shell site">
+    GEO Studio · knowledge model v{{ kb.meta.version }} as of {{ kb.meta.as_of }} · shared with the <code>geo-axo-strategist</code> skill ·
+    <a href="/">Intent Planner</a>
+  </footer>
+
+  <button class="btn primary ask-fab" type="button" data-ask>Ask Claude</button>
+
+  <div class="drawer-backdrop" data-ask-close></div>
+  <aside class="drawer" aria-label="Ask Claude" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <div class="label">Live strategist</div>
+        <h3>Ask Claude</h3>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn small ghost" type="button" data-ask-new>New thread</button>
+        <button class="btn small" type="button" data-ask-close aria-label="Close">Close</button>
+      </div>
+    </div>
+    <div class="drawer-ctx">
+      <div class="row">
+        <select id="ask-project" aria-label="Brand project">
+          <option value="">No project (general)</option>
+          {% for p in projects|default([]) %}
+          <option value="{{ p.id }}" {{ 'selected' if project is defined and project and project.id == p.id }}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+        <label class="check"><input type="checkbox" id="ask-web"> Web search</label>
+      </div>
+      <div class="ctx-assets" id="ask-assets" aria-label="Include assets as context"></div>
+      <div class="target-note hidden" id="ask-target"></div>
+    </div>
+    <div class="thread" id="ask-thread">
+      <div class="empty" id="ask-empty">
+        Ask about GEO, AXO, agent surfaces or your brand. Answers are grounded in the knowledge model{% if projects|default([]) %} and, when a project is selected, its brief and chosen assets{% endif %}. Save any answer to a project as an asset.
+        <div class="suggest" style="justify-content:center;margin-top:14px">
+          <button class="btn small" type="button" data-suggest="What does Meta Muse change for a mid-market DTC brand, and what should it do this quarter?">Muse for DTC</button>
+          <button class="btn small" type="button" data-suggest="Explain the Delegation Ladder and where most brands are stuck.">Delegation Ladder</button>
+          <button class="btn small" type="button" data-suggest="Which three predictions for 2027 have the most budget implications for an FMCG brand?">FMCG 2027</button>
+        </div>
+      </div>
+    </div>
+    <form class="drawer-foot" id="ask-form">
+      <textarea id="ask-input" placeholder="Ask a question… (Enter to send, Shift+Enter for a new line)" aria-label="Question"></textarea>
+      <div class="row">
+        <span class="faint" style="font-size:.78rem">Answers are saved to history. Claude can be wrong, so check before you publish.</span>
+        <button class="btn primary" type="submit" id="ask-send">Send</button>
+      </div>
+    </form>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="/static/geo/geo.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

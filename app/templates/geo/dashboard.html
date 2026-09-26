@@ -1,0 +1,111 @@
+{% extends "geo/base.html" %}
+{% block title %}GEO Studio{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="label">GEO · AXO · knowledge as of {{ kb.meta.as_of }}</div>
+  <h1>Be found. Be chosen. <span class="grad-text">Be delegated&nbsp;to.</span></h1>
+  <p class="lede">A working studio for generative engine optimisation and agentic experience optimisation. Navigate the model, ask Claude live questions, and keep every brand's audits, plans and answers as versioned assets you can revisit and update.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn primary" href="#new-project">New brand project</a>
+    <a class="btn" href="/geo/knowledge">Explore the model</a>
+    <a class="btn ghost" href="/geo/knowledge/outlook">Read the 2027 outlook →</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Workstreams</div><div class="value">{{ kb.workstreams|length }}</div><div class="faint" style="font-size:.8rem">{{ kb.workstreams|selectattr('new_in')|list|length }} new agentic</div></div>
+    <div class="stat"><div class="label">Agent surfaces</div><div class="value">{{ kb.surfaces|length }}</div><div class="faint" style="font-size:.8rem">consumer and B2B</div></div>
+    <div class="stat"><div class="label">Protocols</div><div class="value">{{ kb.protocols|length }}</div><div class="faint" style="font-size:.8rem">UCP · ACP · AP2 · MCP…</div></div>
+    <div class="stat"><div class="label">2027 predictions</div><div class="value">{{ kb.predictions|length }}</div><div class="faint" style="font-size:.8rem">{{ kb.predictions|selectattr('confidence','equalto','high')|list|length }} high confidence</div></div>
+    <div class="stat"><div class="label">Brand projects</div><div class="value hl">{{ projects|length }}</div><div class="faint" style="font-size:.8rem">{% set n = projects|map(attribute='assets')|map('length')|sum %}{{ n }} asset{{ '' if n == 1 else 's' }} stored</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div><div class="label">The core model</div><h2>The Delegation Ladder</h2></div>
+    <a class="btn small" href="/geo/knowledge#ladder">All layers and arenas →</a>
+  </div>
+  <div class="ladder">
+    {% for r in kb.delegation_ladder %}
+    <div class="rung">
+      <div class="code-id">{{ r.rung }}</div>
+      <h4>{{ r.name }}</h4>
+      <p>{{ r.description }}</p>
+      <p class="wins"><span class="label">Wins</span><br>{{ r.what_wins }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="section-head">
+    <div><div class="label">Workspace</div><h2>Brand projects</h2></div>
+  </div>
+  {% if projects %}
+  <div class="cards">
+    {% for p in projects %}
+    {% set score = ari_score(p.ari) %}
+    <a class="card project-card" href="/geo/projects/{{ p.id }}">
+      <div class="chips">
+        <span class="chip">{{ p.segment }}</span>
+        {% if p.market %}<span class="chip">{{ p.market }}</span>{% endif %}
+      </div>
+      <h3>{{ p.name }}</h3>
+      <div class="muted" style="font-size:.9rem">{{ p.sector or 'Sector not set' }}</div>
+      <div class="score-row">
+        <span class="score">{{ score if score is not none else '–' }}</span>
+        <span class="label">ARI v2<br>{{ ari_band(score) }}</span>
+      </div>
+      <div class="faint" style="font-size:.82rem">{{ p.assets|length }} asset{{ '' if p.assets|length == 1 else 's' }} · updated {{ p.updated_at.strftime('%d %b %Y') }}</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">No projects yet. Create one below, then score it, ask Claude about it and start saving assets.</div>
+  {% endif %}
+</section>
+
+<section class="section two-col" id="new-project">
+  <form class="card" method="post" action="/geo/projects">
+    <div class="label">Create</div>
+    <h3>New brand project</h3>
+    <label class="field"><span class="label">Brand name</span><input type="text" name="name" required placeholder="e.g. Northwind Coffee"></label>
+    <div class="grid-2">
+      <label class="field"><span class="label">Sector</span><input type="text" name="sector" placeholder="e.g. FMCG · coffee"></label>
+      <label class="field"><span class="label">Market</span><input type="text" name="market" placeholder="e.g. UK"></label>
+    </div>
+    <div class="grid-2">
+      <label class="field"><span class="label">Segment</span>
+        <select name="segment"><option value="consumer">Consumer</option><option value="b2b">B2B</option><option value="both">Both</option></select>
+      </label>
+      <label class="field"><span class="label">Website</span><input type="url" name="website" placeholder="https://"></label>
+    </div>
+    <label class="field"><span class="label">Competitor set</span><input type="text" name="competitors" placeholder="Comma-separated"></label>
+    <label class="field"><span class="label">Brief and notes</span><textarea name="notes" placeholder="Objectives, known issues, where the brand sells…"></textarea></label>
+    <button class="btn primary" type="submit">Create project</button>
+  </form>
+
+  <div class="card">
+    <div class="label">Recent questions</div>
+    <h3>Asked lately</h3>
+    {% if recent %}
+      {% for ex in recent %}
+      <div class="asset-row">
+        <div>
+          <div style="color:var(--text)">{{ ex.question[:140] }}</div>
+          <div class="sub">{{ ex.project.name if ex.project else 'General' }} · {{ ex.created_at.strftime('%d %b %H:%M') }}{{ ' · web' if ex.web_search }}</div>
+        </div>
+        {% if ex.project %}<a class="btn small ghost" href="/geo/projects/{{ ex.project.id }}#history">Open</a>{% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="muted">Nothing yet. Use <b>Ask Claude</b> (bottom right) from any page. Knowledge cards and project starter kits pre-fill good questions.</p>
+    {% endif %}
+    <hr>
+    <div class="label">Signals to watch</div>
+    {% for pr in kb.predictions[:3] %}
+    <p style="margin:10px 0 0;font-size:.9rem"><b style="color:var(--text)">{{ pr.id }}</b> {{ pr.statement }} <span class="chip conf-{{ pr.confidence }}">{{ pr.confidence }}</span></p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

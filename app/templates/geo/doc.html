@@ -1,0 +1,10 @@
+{% extends "geo/base.html" %}
+{% block title %}{{ title }} · GEO Studio{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="/geo/knowledge">Knowledge</a> / {{ title }}</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px">
+  <button class="btn small" type="button" data-ask data-ask-q="Summarise the {{ title }} for my brand in 10 bullets, then list what I should do in the next 90 days.">Apply to a brand →</button>
+  <a class="btn small ghost" href="/geo/knowledge.json">knowledge.json</a>
+</div>
+<article class="prose">{{ doc|md }}</article>
+{% endblock %}
