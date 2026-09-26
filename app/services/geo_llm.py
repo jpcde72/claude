@@ -1,6 +1,7 @@
 """Live Q&A against Claude, grounded in the GEO/AXO knowledge model and the brand project."""
 
 import logging
+import os
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 
@@ -101,7 +102,10 @@ def _sources_footer(message) -> str:
 async def stream_answer(req: AskRequest) -> AsyncIterator[dict]:
     """Yield events: {"type": "status"|"text"|"error"|"final", ...}."""
     try:
-        client = anthropic.AsyncAnthropic()
+        # Keys not scoped to a workspace must name one on every request.
+        workspace = os.environ.get("ANTHROPIC_WORKSPACE_ID", "").strip()
+        headers = {"anthropic-workspace-id": workspace} if workspace else None
+        client = anthropic.AsyncAnthropic(default_headers=headers)
     except anthropic.AnthropicError:
         yield {"type": "error", "message": NO_CREDENTIALS}
         return

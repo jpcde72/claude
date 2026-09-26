@@ -23,6 +23,7 @@ Optional settings (environment variables):
 | `INTENT_PLANNER_DATABASE_URL` | `sqlite:///./intent_planner.db` | Storage for both apps |
 | `INTENT_PLANNER_GEO_MODEL` | `claude-opus-5` | Claude model used by GEO Studio |
 | `INTENT_PLANNER_GEO_MAX_TOKENS` | `32000` | Answer length cap |
+| `ANTHROPIC_WORKSPACE_ID` | unset | Needed only if your API key isn't scoped to a workspace (sent as `anthropic-workspace-id`) |
 
 Tests: `pytest -q`.
 
