@@ -36,6 +36,15 @@ Tests: `pytest -q`.
 - **Ask Claude drawer** (every page): streams answers grounded in the knowledge model, the project brief and any assets you tick. **Web search** is on by default (switch it off for faster, model-only answers; the choice is remembered per browser). It keeps follow-up context within a thread, and **saves** any answer as a new asset or as the next version of an existing one. Server-side refusal fallbacks are enabled (`fallbacks: "default"`).
 - **Visual systems**: a **JP | OM** toggle in the header switches between the JP Meridian (Tropical) system and the Omnicom Media system. The choice is remembered per browser.
 
+## Phone version
+
+`mobile/` builds a phone-first GEO Studio as a private claude.ai artifact: https://claude.ai/artifact/11omnkDiH5LBP7fFMbcb2Z
+
+- It opens in the Claude iPhone app. It needs no server or API key, because Claude answers inside the page on your own account.
+- Brand projects and versioned assets are stored with the artifact, so they're available on every device.
+- Web search isn't available there: answers use the knowledge model as of its date.
+- After editing `knowledge.json`, run `python mobile/build.py` and republish `mobile/geo-studio.html` to the same artifact.
+
 ## Skills
 
 `skills/` holds the versioned skill sources:
